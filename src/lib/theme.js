@@ -1,8 +1,8 @@
 // Light, dark, or follow the device. The choice is remembered on this device.
 export const themes = [
-  { id: 'auto', name: 'Automatic', swatch: ['#eeeae3', '#1c1719'] },
-  { id: 'light', name: 'Light', swatch: ['#eeeae3', '#f7f4ef'] },
-  { id: 'dark', name: 'Dark', swatch: ['#1c1719', '#282124'] },
+  { id: 'auto', name: 'Automatic', swatch: ['#eef0e6', '#141712'] },
+  { id: 'light', name: 'Light', swatch: ['#eef0e6', '#5e2140'] },
+  { id: 'dark', name: 'Dark', swatch: ['#141712', '#6e2a4b'] },
 ];
 
 const KEY = 'mise-theme';
