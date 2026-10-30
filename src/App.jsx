@@ -8,9 +8,11 @@ import Soon from './pages/Soon';
 import Larder from './pages/Larder';
 import List from './pages/List';
 import Discover from './pages/Discover';
+import Table from './pages/Table';
 
 const tabs = [
   { to: '/', label: 'Recipes' },
+  { to: '/table', label: 'Table' },
   { to: '/discover', label: 'Discover' },
   { to: '/larder', label: 'Larder' },
   { to: '/list', label: 'List' },
@@ -53,7 +55,7 @@ function App() {
           <Route path="/recipe/:id/edit" element={<EditRecipe />} />
           <Route path="/recipe/:id/cook" element={<Cook />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/table" element={<Soon title="Table" text="Meal planning is coming soon." />} />
+          <Route path="/table" element={<Table />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/larder" element={<Larder />} />
           <Route path="/list" element={<List />} />

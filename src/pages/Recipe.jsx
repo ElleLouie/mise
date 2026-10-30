@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveRecipe, deleteRecipe, addNote, addToList } from '../lib/db';
+import { db, saveRecipe, deleteRecipe, addNote, addToList, planRecipe } from '../lib/db';
 import { scaleIngredient } from '../lib/ingredients';
 import { missingFor, similar } from '../lib/suggest';
 import { formatTime, formatDate } from '../lib/format';
+import { weekDays, dayLabel, today } from '../lib/week';
 import RecipeCard from '../components/RecipeCard';
 import Soon from './Soon';
 
@@ -112,6 +113,22 @@ function Recipe() {
                 Add {missing.size} missing to list
               </button>
             )}
+            <label className="select_button">
+              <span className="visually_hidden">Add to plan</span>
+              <select
+                value=""
+                onChange={async (e) => {
+                  const day = e.target.value;
+                  await planRecipe(day, id);
+                  setAdded(`Planned for ${dayLabel(day, 'short')}`);
+                }}
+              >
+                <option value="" disabled>Add to plan</option>
+                {[...weekDays(0), ...weekDays(1)].filter((day) => day >= today()).map((day) => (
+                  <option key={day} value={day}>{dayLabel(day, 'short')}</option>
+                ))}
+              </select>
+            </label>
             <Link to={`/recipe/${id}/edit`} className="button button-quiet">Edit</Link>
             <button
               type="button"
@@ -123,7 +140,11 @@ function Recipe() {
               {recipe.favorite ? '★' : '☆'}
             </button>
           </div>
-          {added && <p className="small" role="status">{added} · <Link to="/list" className="link">View list</Link></p>}
+          {added && (
+            <p className="small" role="status">
+              {added} · <Link to={added.startsWith('Planned') ? '/table' : '/list'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View list'}</Link>
+            </p>
+          )}
         </div>
       </header>
 

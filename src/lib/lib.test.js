@@ -6,6 +6,7 @@ import {
 import { missingFor, canMake, similar } from './suggest.js';
 import { aisleFor } from './aisles.js';
 import { toRecipe } from './mealdb.js';
+import { weekDays, isoDate } from './week.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -127,4 +128,12 @@ test('turns a TheMealDB meal into a recipe', () => {
   assert.equal(recipe.steps[1], 'Combine soy sauce and honey.');
   assert.equal(recipe.steps[2], 'Bake for 30 minutes.');
   assert.equal(recipe.source, 'https://www.themealdb.com/meal/52772');
+});
+
+test('lists the days of a week, Monday first', () => {
+  const thursday = new Date(2026, 9, 29);
+  assert.deepEqual(weekDays(0, thursday), ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30', '2026-10-31', '2026-11-01']);
+  assert.equal(weekDays(1, thursday)[0], '2026-11-02');
+  assert.equal(weekDays(0, new Date(2026, 10, 1))[0], '2026-10-26');
+  assert.equal(isoDate(new Date(2026, 0, 5)), '2026-01-05');
 });

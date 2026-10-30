@@ -21,6 +21,14 @@ db.version(3).stores({
   list: '++id, done, addedAt',
 });
 
+// v4: the weekly plan, one row per recipe on a day ("2026-11-02")
+db.version(4).stores({
+  recipes: 'id, title, createdAt, updatedAt, lastCookedAt, *tags',
+  larder: 'name, addedAt',
+  list: '++id, done, addedAt',
+  plan: '++id, date, recipeId',
+});
+
 // fill a brand-new recipe box with a few samples so it isn't empty
 db.on('populate', (tx) => tx.table('recipes').bulkAdd(sampleRecipes()));
 
@@ -48,7 +56,10 @@ export function blankRecipe() {
 
 export const saveRecipe = (recipe) => db.recipes.put({ ...recipe, updatedAt: Date.now() });
 
-export const deleteRecipe = (id) => db.recipes.delete(id);
+export async function deleteRecipe(id) {
+  await db.plan.where('recipeId').equals(id).delete();
+  await db.recipes.delete(id);
+}
 
 // "Last time" notes; saving one also marks the recipe as cooked today.
 export async function addNote(recipe, { text, rating }) {
@@ -100,10 +111,15 @@ export async function putAway() {
   return done.length;
 }
 
+// The plan: recipes on days.
+export const planRecipe = (date, recipeId) => db.plan.add({ date, recipeId });
+
+export const unplan = (id) => db.plan.delete(id);
+
 // Backups: everything as one JSON file, and back again.
 export async function exportRecipes() {
-  const [recipes, larder, list] = await Promise.all([db.recipes.toArray(), db.larder.toArray(), db.list.toArray()]);
-  return JSON.stringify({ app: 'mise', version: 2, exportedAt: new Date().toISOString(), recipes, larder, list }, null, 2);
+  const [recipes, larder, list, plan] = await Promise.all([db.recipes.toArray(), db.larder.toArray(), db.list.toArray(), db.plan.toArray()]);
+  return JSON.stringify({ app: 'mise', version: 3, exportedAt: new Date().toISOString(), recipes, larder, list, plan }, null, 2);
 }
 
 export async function importRecipes(json) {
@@ -112,5 +128,6 @@ export async function importRecipes(json) {
   await db.recipes.bulkPut(data.recipes);
   if (Array.isArray(data.larder)) await db.larder.bulkPut(data.larder);
   if (Array.isArray(data.list)) await db.list.bulkPut(data.list);
+  if (Array.isArray(data.plan)) await db.plan.bulkPut(data.plan);
   return data.recipes.length;
 }

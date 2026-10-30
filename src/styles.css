@@ -249,6 +249,139 @@ button {
   margin-top: 24px;
 }
 
+/* table: the weekly plan */
+.week_nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.week_title {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 28px;
+}
+
+.week {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.day {
+  padding: 16px 20px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+
+.day-today {
+  border-color: var(--glaze);
+  box-shadow: inset 0 0 0 1px var(--glaze);
+}
+
+.day_head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.day_name {
+  font-weight: 600;
+}
+
+.day-today .day_name::after {
+  content: ' · Today';
+  color: var(--glaze);
+  font-weight: 500;
+}
+
+.day_date {
+  color: var(--muted);
+}
+
+.day_meals {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.day_meals li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.day_meal {
+  flex: 1;
+  padding: 10px 0;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 24px;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.day_add {
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.day_add:hover {
+  color: var(--ink);
+}
+
+.picker {
+  margin-top: 10px;
+}
+
+.picker .toolbar {
+  margin-top: 0;
+}
+
+.picker .items {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.items_pick {
+  flex: 1;
+  min-height: 52px;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 18px;
+}
+
+.items_pick:hover {
+  color: var(--accent);
+}
+
+/* "Add to plan": a select styled as a quiet button */
+.select_button select {
+  min-height: 50px;
+  padding: 0 40px 0 20px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%237a6a5a' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 16px center;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  appearance: none;
+  cursor: pointer;
+}
+
 /* discover */
 .discover {
   list-style: none;
@@ -1152,9 +1285,11 @@ textarea {
   .tab {
     display: grid;
     place-items: center;
-    min-width: 76px;
+    min-width: 0;
+    flex: 1;
     min-height: 52px;
     border-bottom: none;
+    font-size: 13px;
   }
 
   .tab.active {
@@ -1189,6 +1324,14 @@ textarea {
 
   .actions .button-icon {
     flex: 0 0 50px;
+  }
+
+  .select_button {
+    flex: 1 1 auto;
+  }
+
+  .select_button select {
+    width: 100%;
   }
 
   .discover {
