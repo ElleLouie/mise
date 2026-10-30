@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'mise',
         short_name: 'mise',
         description: 'Provisions & recipes: a recipe box that cooks with you',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#eeeae3',
+        background_color: '#eeeae3',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },

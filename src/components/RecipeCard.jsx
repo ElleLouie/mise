@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { formatTime } from '../lib/format';
 import Icon from './Icon';
 
-// soft tints for recipes without a photo, picked from the recipe's id
-const TINTS = ['#f6ede6', '#eef2e9', '#f5eaee', '#e9eff5', '#f5f0e4', '#efecf5'];
+// glaze pastels for recipes without a photo, picked from the recipe's id
+const TINTS = ['#e3e3c4', '#fbe7b5', '#e6dbea', '#dfedf3', '#e2efd1', '#f0d8d3'];
 const tintFor = (id) => TINTS[[...id].reduce((n, c) => n + c.charCodeAt(0), 0) % TINTS.length];
 
 export function RecipeImage({ recipe, className = '' }) {

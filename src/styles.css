@@ -1,44 +1,53 @@
 /* mise: a calm, native-feeling recipe app. System type, grouped sections, one coral accent. */
 
 :root {
-  --bg: #ffffff;
-  --surface: #f2f2f4;
-  --surface-strong: #e7e7ea;
-  --ink: #1d1d1f;
-  --muted: #6e6e73;
-  --rule: rgba(0, 0, 0, 0.08);
-  --accent: #e8513f;
-  --accent-ink: #ffffff;
-  --ready: #2f8f4e;
-  --radius: 14px;
-  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter Tight Variable', system-ui, sans-serif;
-  --display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Tight Variable', system-ui, sans-serif;
+  /* warm greige paper, cream cards, plum ink; glaze pastels for accents */
+  --bg: #eeeae3;
+  --surface: #f7f4ef;
+  --surface-strong: #e4ded4;
+  --ink: #2b2326;
+  --muted: #7d7470;
+  --rule: rgba(43, 35, 38, 0.12);
+  --accent: #6e2c43;
+  --accent-ink: #f7f4ef;
+  --ready: #5e7a3a;
+  --matcha: #c4c48b;
+  --butter: #fddd92;
+  --orchid: #d4c0dc;
+  --icy: #e7f2f7;
+  --peppermint: #dceec2;
+  --rose: #ecc9c4;
+  --radius: 16px;
+  --font: 'Inter Tight Variable', system-ui, sans-serif;
+  --display: 'Newsreader Variable', Georgia, serif;
   color-scheme: light;
 }
 
 /* dark: chosen, or following the device */
 :root[data-theme='dark'] {
-  --bg: #000000;
-  --surface: #1c1c1e;
-  --surface-strong: #2c2c2e;
-  --ink: #f5f5f7;
-  --muted: #98989d;
-  --rule: rgba(255, 255, 255, 0.1);
-  --accent: #ff6b57;
-  --ready: #3fbf6a;
+  --bg: #1c1719;
+  --surface: #282124;
+  --surface-strong: #362d31;
+  --ink: #f1ebe6;
+  --muted: #a99d98;
+  --rule: rgba(241, 235, 230, 0.12);
+  --accent: #e3b6c4;
+  --accent-ink: #2b2326;
+  --ready: #b9d58e;
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root[data-theme='auto'] {
-    --bg: #000000;
-    --surface: #1c1c1e;
-    --surface-strong: #2c2c2e;
-    --ink: #f5f5f7;
-    --muted: #98989d;
-    --rule: rgba(255, 255, 255, 0.1);
-    --accent: #ff6b57;
-    --ready: #3fbf6a;
+    --bg: #1c1719;
+    --surface: #282124;
+    --surface-strong: #362d31;
+    --ink: #f1ebe6;
+    --muted: #a99d98;
+    --rule: rgba(241, 235, 230, 0.12);
+    --accent: #e3b6c4;
+    --accent-ink: #2b2326;
+    --ready: #b9d58e;
     color-scheme: dark;
   }
 }
@@ -59,6 +68,7 @@ body {
   color: var(--ink);
   font-family: var(--font);
   font-size: 17px;
+  font-weight: 380;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -117,11 +127,12 @@ button {
 }
 
 .wordmark {
-  padding: 0 12px 24px;
+  padding: 0 12px 28px;
   font-family: var(--display);
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 30px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
 
@@ -183,10 +194,10 @@ button {
 .page_title {
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(32px, 4vw, 40px);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: clamp(38px, 4.6vw, 52px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
 }
 
 .page_head {
@@ -207,11 +218,15 @@ button {
 }
 
 .section_title {
-  margin: 0 0 14px;
-  font-family: var(--display);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .group {
@@ -219,13 +234,13 @@ button {
 }
 
 .group_title {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   padding-left: 4px;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .lede,
@@ -244,7 +259,7 @@ button {
 
 .label {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .label-accent {
@@ -301,7 +316,7 @@ button {
   background: var(--accent);
   color: var(--accent-ink);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -479,7 +494,7 @@ input[type='checkbox'] {
   border-radius: 8px;
   background: none;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
 }
 
@@ -497,7 +512,7 @@ input[type='checkbox'] {
   background: var(--surface);
   color: var(--muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -529,27 +544,42 @@ input[type='checkbox'] {
   display: grid;
   gap: 2px;
   height: 100%;
-  padding: 18px;
+  padding: 20px;
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--matcha);
+  color: #2b2326;
   text-decoration: none;
+  transition: transform 200ms ease;
+}
+
+.how li:nth-child(2) a {
+  background: var(--butter);
+}
+
+.how li:nth-child(3) a {
+  background: var(--orchid);
 }
 
 .how a:hover {
-  background: var(--surface-strong);
+  transform: translateY(-2px);
 }
 
 .how .icon {
-  margin-bottom: 8px;
-  color: var(--accent);
+  margin-bottom: 10px;
+  color: #2b2326;
 }
 
 .how_title {
-  font-weight: 600;
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+.how_title {
+  font-weight: 500;
 }
 
 .how_text {
-  color: var(--muted);
+  color: rgba(43, 35, 38, 0.72);
   font-size: 15px;
 }
 
@@ -586,7 +616,7 @@ input[type='checkbox'] {
 .recipe_image-empty {
   display: grid;
   place-items: center;
-  color: rgba(0, 0, 0, 0.22);
+  color: rgba(43, 35, 38, 0.28);
 }
 
 .card:hover .recipe_image {
@@ -594,9 +624,10 @@ input[type='checkbox'] {
 }
 
 .card_title {
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.25;
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 450;
+  line-height: 1.15;
 }
 
 .card_meta {
@@ -636,7 +667,7 @@ input[type='checkbox'] {
 .servings output {
   min-width: 22px;
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
 }
 
@@ -706,7 +737,7 @@ input[type='checkbox'] {
   margin-left: auto;
   color: var(--ready);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .steps {
@@ -735,7 +766,7 @@ input[type='checkbox'] {
   background: var(--accent);
   color: var(--accent-ink);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .source {
@@ -919,7 +950,7 @@ input[type='checkbox'] {
 
 .week_title {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .week {
@@ -947,7 +978,7 @@ input[type='checkbox'] {
 }
 
 .day_name {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .day-today .day_name::after {
@@ -1045,7 +1076,7 @@ input[type='checkbox'] {
   flex: 1;
   margin: 0;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
 }
 
@@ -1116,8 +1147,8 @@ input[type='checkbox'] {
 .cook_text {
   margin: 12px 0 20px;
   font-family: var(--display);
-  font-size: clamp(28px, 6vw, 42px);
-  font-weight: 600;
+  font-size: clamp(30px, 6.4vw, 46px);
+  font-weight: 400;
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
@@ -1160,7 +1191,7 @@ input[type='checkbox'] {
 .timer_clock {
   min-width: 90px;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
