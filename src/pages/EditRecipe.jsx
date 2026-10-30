@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Icon from '../components/Icon';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, blankRecipe, saveRecipe } from '../lib/db';
@@ -35,11 +36,9 @@ function Form({ recipe, isNew }) {
 
   return (
     <div className="page">
-      <div className="crumbs">
-        <Link to={isNew ? '/' : `/recipe/${recipe.id}`} className="label link">&larr; Back</Link>
-      </div>
+      <Link to={isNew ? '/' : `/recipe/${recipe.id}`} className="back_link"><Icon name="back" size={18} />Back</Link>
       <form className="panel form" onSubmit={onSubmit}>
-        <h1 className="display form_title">{isNew ? 'New recipe' : 'Edit recipe'}</h1>
+        <h1 className="page_title">{isNew ? 'New recipe' : 'Edit recipe'}</h1>
         <label className="field">
           <span className="label">Name</span>
           <input required value={form.title} onChange={set('title')} placeholder="Lemony white bean pasta" />

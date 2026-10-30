@@ -5,66 +5,63 @@ import EditRecipe from './pages/EditRecipe';
 import Cook from './pages/Cook';
 import Settings from './pages/Settings';
 import Soon from './pages/Soon';
-import Larder from './pages/Larder';
-import List from './pages/List';
+import Groceries from './pages/Groceries';
 import Discover from './pages/Discover';
 import Table from './pages/Table';
+import Icon from './components/Icon';
 
 const tabs = [
-  { to: '/', label: 'Recipes' },
-  { to: '/plan', label: 'Plan' },
-  { to: '/pantry', label: 'Pantry' },
-  { to: '/shopping', label: 'Shopping' },
+  { to: '/', label: 'Recipes', icon: 'book' },
+  { to: '/plan', label: 'Plan', icon: 'calendar' },
+  { to: '/groceries', label: 'Groceries', icon: 'bag' },
 ];
 
-// The masthead with the navigation: across the top on wide screens, a tab bar on phones.
-function Masthead() {
+// A sidebar on wide screens, a tab bar along the bottom on phones.
+function Navigation() {
   // cook mode takes over the whole screen
   if (useLocation().pathname.endsWith('/cook')) return null;
   return (
-    <header className="masthead">
+    <aside className="sidebar">
       <Link to="/" className="wordmark">mise</Link>
-      <div className="masthead_right">
-        <nav className="tabs label" aria-label="Main">
-          {tabs.map(({ to, label }) => (
-            <NavLink key={to} to={to} end={to === '/'} className="tab">{label}</NavLink>
-          ))}
-        </nav>
-        <NavLink to="/settings" className="icon_button" aria-label="Settings">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-            <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
-            <circle cx="16" cy="7" r="2" />
-            <circle cx="10" cy="17" r="2" />
-          </svg>
-        </NavLink>
-      </div>
-    </header>
+      <nav className="tabs" aria-label="Main">
+        {tabs.map(({ to, label, icon }) => (
+          <NavLink key={to} to={to} end={to === '/'} className="tab">
+            <Icon name={icon} size={22} />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+      <NavLink to="/settings" className="tab tab-settings">
+        <Icon name="settings" size={22} />
+        <span>Settings</span>
+      </NavLink>
+    </aside>
   );
 }
 
 function App() {
   return (
     <BrowserRouter>
-      <Masthead />
-      <main className="app">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/new" element={<EditRecipe />} />
-          <Route path="/recipe/:id" element={<Recipe />} />
-          <Route path="/recipe/:id/edit" element={<EditRecipe />} />
-          <Route path="/recipe/:id/cook" element={<Cook />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/plan" element={<Table />} />
-          <Route path="/discover" element={<Discover />} />
-          <Route path="/pantry" element={<Larder />} />
-          <Route path="/shopping" element={<List />} />
-          {/* earlier names for these screens */}
-          <Route path="/table" element={<Navigate to="/plan" replace />} />
-          <Route path="/larder" element={<Navigate to="/pantry" replace />} />
-          <Route path="/list" element={<Navigate to="/shopping" replace />} />
-          <Route path="*" element={<Soon title="Not found" text="This page doesn't exist." />} />
-        </Routes>
-      </main>
+      <div className="shell">
+        <Navigation />
+        <main className="app">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<EditRecipe />} />
+            <Route path="/recipe/:id" element={<Recipe />} />
+            <Route path="/recipe/:id/edit" element={<EditRecipe />} />
+            <Route path="/recipe/:id/cook" element={<Cook />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/plan" element={<Table />} />
+            <Route path="/discover" element={<Discover />} />
+            <Route path="/groceries" element={<Groceries />} />
+            {/* earlier names for these pages */}
+            {['/table'].map((path) => <Route key={path} path={path} element={<Navigate to="/plan" replace />} />)}
+            {['/shopping', '/list', '/pantry', '/larder'].map((path) => <Route key={path} path={path} element={<Navigate to="/groceries" replace />} />)}
+            <Route path="*" element={<Soon title="Not found" text="This page doesn't exist." />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
   );
 }

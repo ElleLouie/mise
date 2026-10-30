@@ -7,6 +7,7 @@ import { missingFor, similar } from '../lib/suggest';
 import { formatTime, formatDate } from '../lib/format';
 import { weekDays, dayLabel, today } from '../lib/week';
 import RecipeCard from '../components/RecipeCard';
+import Icon from '../components/Icon';
 import Soon from './Soon';
 
 function hostname(url) {
@@ -82,75 +83,74 @@ function Recipe() {
   const addMissing = async () => {
     const lines = recipe.ingredients.filter((line) => missing.has(line)).map((line) => scaleIngredient(line, factor));
     const count = await addToList(lines, recipe.title);
-    setAdded(count === 0 ? 'Already on your shopping list' : `Added ${count} to your shopping list`);
+    setAdded(count === 0 ? 'Already in your groceries' : `Added ${count} to groceries`);
   };
 
   return (
     <div className="page recipe">
-      <div className="crumbs">
-        <Link to="/" className="label link">&larr; Recipes</Link>
-      </div>
+      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
 
-      <header className="recipe_label">
-        {recipe.image && <img src={recipe.image} alt="" className="recipe_photo" />}
-        <div className="recipe_label_text">
-          {recipe.tags.length > 0 && (
-            <div className="jar_row">{recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
-          )}
-          <h1 className="display recipe_title">{recipe.title}</h1>
-          <div className="recipe_meta">
-            <span>{formatTime(recipe.minutes)}</span>
-            <span className="servings">
-              <button type="button" className="step_button" aria-label="Fewer servings" onClick={() => setServings(Math.max(1, portions - 1))}>−</button>
-              <output aria-live="polite">Serves {portions}</output>
-              <button type="button" className="step_button" aria-label="More servings" onClick={() => setServings(portions + 1)}>+</button>
-            </span>
-          </div>
-          <div className="actions">
-            <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button button-primary">Start cooking</Link>
-            {missing.size > 0 && (
-              <button type="button" className="button button-quiet" onClick={addMissing}>
-                Add {missing.size} missing to shopping list
-              </button>
-            )}
-            <label className="select_button">
-              <span className="visually_hidden">Add to plan</span>
-              <select
-                value=""
-                onChange={async (e) => {
-                  const day = e.target.value;
-                  await planRecipe(day, id);
-                  setAdded(`Planned for ${dayLabel(day, 'short')}`);
-                }}
-              >
-                <option value="" disabled>Add to plan</option>
-                {[...weekDays(0), ...weekDays(1)].filter((day) => day >= today()).map((day) => (
-                  <option key={day} value={day}>{dayLabel(day, 'short')}</option>
-                ))}
-              </select>
-            </label>
-            <Link to={`/recipe/${id}/edit`} className="button button-quiet">Edit</Link>
-            <button
-              type="button"
-              className="button button-quiet button-icon"
-              aria-pressed={recipe.favorite}
-              aria-label={recipe.favorite ? 'Remove from favorites' : 'Add to favorites'}
-              onClick={() => saveRecipe({ ...recipe, favorite: !recipe.favorite })}
-            >
-              {recipe.favorite ? '★' : '☆'}
-            </button>
-          </div>
-          {added && (
-            <p className="small" role="status">
-              {added} · <Link to={added.startsWith('Planned') ? '/plan' : '/shopping'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View shopping list'}</Link>
-            </p>
-          )}
+      {recipe.image && <img src={recipe.image} alt="" className="recipe_hero" />}
+
+      <header className="recipe_head">
+        <h1 className="page_title">{recipe.title}</h1>
+        <div className="recipe_meta">
+          <span className="meta_item"><Icon name="clock" size={18} />{formatTime(recipe.minutes)}</span>
+          <span className="meta_item servings">
+            <Icon name="people" size={18} />
+            <button type="button" className="step_button" aria-label="Fewer servings" onClick={() => setServings(Math.max(1, portions - 1))}>−</button>
+            <output aria-live="polite">{portions}</output>
+            <button type="button" className="step_button" aria-label="More servings" onClick={() => setServings(portions + 1)}>+</button>
+          </span>
+          {recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}
         </div>
+
+        <div className="actions">
+          <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button"><Icon name="play" size={18} />Start cooking</Link>
+          <label className="button button-quiet select_button">
+            <Icon name="calendar" size={18} />
+            <span>Plan</span>
+            <select
+              value=""
+              aria-label="Add to plan"
+              onChange={async (e) => {
+                const day = e.target.value;
+                await planRecipe(day, id);
+                setAdded(`Planned for ${dayLabel(day, 'short')}`);
+              }}
+            >
+              <option value="" disabled>Add to plan</option>
+              {[...weekDays(0), ...weekDays(1)].filter((day) => day >= today()).map((day) => (
+                <option key={day} value={day}>{dayLabel(day, 'short')}</option>
+              ))}
+            </select>
+          </label>
+          {missing.size > 0 && (
+            <button type="button" className="button button-quiet" onClick={addMissing}>
+              <Icon name="bag" size={18} />Add {missing.size} to groceries
+            </button>
+          )}
+          <button
+            type="button"
+            className="button button-quiet button-icon"
+            aria-pressed={recipe.favorite}
+            aria-label={recipe.favorite ? 'Remove from favorites' : 'Add to favorites'}
+            onClick={() => saveRecipe({ ...recipe, favorite: !recipe.favorite })}
+          >
+            <Icon name="star" size={18} filled={recipe.favorite} />
+          </button>
+          <Link to={`/recipe/${id}/edit`} className="button button-quiet button-icon" aria-label="Edit recipe"><Icon name="edit" size={18} /></Link>
+        </div>
+        {added && (
+          <p className="small" role="status">
+            {added} · <Link to={added.startsWith('Planned') ? '/plan' : '/groceries'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View groceries'}</Link>
+          </p>
+        )}
       </header>
 
       <div className="recipe_body">
         <section>
-          <h2 className="section_label label">Ingredients</h2>
+          <h2 className="section_title">Ingredients</h2>
           <ul className="ingredients">
             {recipe.ingredients.map((line, i) => (
               <li key={`${i}-${line}`}>
@@ -165,7 +165,7 @@ function Recipe() {
         </section>
 
         <section>
-          <h2 className="section_label label">Method</h2>
+          <h2 className="section_title">Steps</h2>
           <ol className="steps">
             {recipe.steps.map((step, i) => <li key={`${i}-${step}`}>{step}</li>)}
           </ol>
@@ -177,7 +177,7 @@ function Recipe() {
         </section>
       </div>
 
-      <section className="notes">
+      <section className="section notes">
         <h2 className="section_title">Notes</h2>
         <ul>
           {recipe.notes.map((note) => (
@@ -194,17 +194,17 @@ function Recipe() {
       </section>
 
       {recipes && similar(recipe, recipes).length > 0 && (
-        <section className="related">
+        <section className="section">
           <h2 className="section_title">More like this</h2>
-          <ul className="shelf shelf-compact">
-            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} compact /></li>)}
+          <ul className="grid grid-row">
+            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} /></li>)}
           </ul>
         </section>
       )}
 
       <button
         type="button"
-        className="label link link-danger"
+        className="link link-danger"
         onClick={async () => {
           if (window.confirm(`Delete "${recipe.title}"?`)) {
             await deleteRecipe(id);

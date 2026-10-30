@@ -1,20 +1,30 @@
 import { Link } from 'react-router-dom';
-import { keyIngredients } from '../lib/ingredients';
 import { formatTime } from '../lib/format';
+import Icon from './Icon';
 
-// A recipe in a grid: photo if it has one, tags, name, time and the main ingredients.
-function RecipeCard({ recipe, compact = false }) {
+// soft tints for recipes without a photo, picked from the recipe's id
+const TINTS = ['#f6ede6', '#eef2e9', '#f5eaee', '#e9eff5', '#f5f0e4', '#efecf5'];
+const tintFor = (id) => TINTS[[...id].reduce((n, c) => n + c.charCodeAt(0), 0) % TINTS.length];
+
+export function RecipeImage({ recipe, className = '' }) {
+  if (recipe.image) return <img src={recipe.image} alt="" className={`recipe_image ${className}`} loading="lazy" />;
   return (
-    <Link to={`/recipe/${recipe.id}`} className={compact ? 'jar jar-compact' : 'jar'}>
-      <div className="jar_label">
-        {recipe.image && <img src={recipe.image} alt="" className="jar_photo" loading="lazy" />}
-        {!compact && recipe.tags.length > 0 && (
-          <div className="jar_row">{recipe.tags.slice(0, 3).map((t) => <span key={t} className="tag">{t}</span>)}</div>
-        )}
-        <h3 className="jar_title">{recipe.title}</h3>
-        <p className="jar_meta">{formatTime(recipe.minutes)} · Serves {recipe.servings}</p>
-        {!compact && <p className="jar_keys">{keyIngredients(recipe.ingredients).join(', ')}</p>}
-      </div>
+    <span className={`recipe_image recipe_image-empty ${className}`} style={{ background: tintFor(recipe.id) }}>
+      <Icon name="utensils" size={28} />
+    </span>
+  );
+}
+
+// A recipe in the grid: picture, name, time and servings, plus a note like "Ready to cook".
+function RecipeCard({ recipe, note }) {
+  return (
+    <Link to={`/recipe/${recipe.id}`} className="card">
+      <RecipeImage recipe={recipe} />
+      <span className="card_title">{recipe.title}</span>
+      <span className="card_meta">
+        {note ? <span className={note === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{note}</span> : null}
+        {formatTime(recipe.minutes)} · Serves {recipe.servings}
+      </span>
     </Link>
   );
 }

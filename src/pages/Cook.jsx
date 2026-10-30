@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { scaleIngredient } from '../lib/ingredients';
+import Icon from '../components/Icon';
 import { splitStep, formatClock } from '../lib/timers';
 
 // a short kitchen-timer beep, without needing a sound file
@@ -95,7 +96,7 @@ function Cook() {
   return (
     <div className="cook">
       <header className="cook_head">
-        <Link to={`/recipe/${id}`} className="label link">&times; Close</Link>
+        <Link to={`/recipe/${id}`} className="back_link"><Icon name="close" size={18} />Close</Link>
         <span className="label">{recipe.title}</span>
         <button type="button" className="label link" aria-expanded={showIngredients} onClick={() => setShowIngredients(!showIngredients)}>
           Ingredients

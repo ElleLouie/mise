@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, blankRecipe, saveRecipe } from '../lib/db';
 import { findByIngredient, lookup, toRecipe } from '../lib/mealdb';
+import Icon from '../components/Icon';
 
 const IDEAS = ['chicken', 'salmon', 'beef', 'pasta', 'rice', 'tofu', 'mushrooms', 'lemon'];
 
@@ -48,8 +49,8 @@ function Discover() {
 
   return (
     <div className="page">
-      <Link to="/" className="label link">&larr; Recipes</Link>
-      <h1 className="display page_title">Find new recipes</h1>
+      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
+      <h1 className="page_title">Find new recipes</h1>
 
       <form
         className="toolbar"

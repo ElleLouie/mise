@@ -4,20 +4,16 @@ A recipe box that cooks with you: calm, warm and easy to read from across the ki
 
 ## Features
 
-- **Recipes:** add, edit, search and tag recipes, mark favorites
-- **How it works:** a three-step guide for new users on the Recipes page
-- **Cook tonight:** suggestions that are ready to cook with what you have, one ingredient away, or favorites due a repeat
-- **Recipe page:** servings stepper that rescales quantities, "Have" marks for what's in your pantry, add missing ingredients to your shopping list, notes, and "More like this"
+- **Recipes:** save your own or find new ones, search, filter by tag or favorites
+- **Cook tonight:** recipes you can make with what's at home, one ingredient away, or favorites due a repeat
+- **Recipe page:** servings that rescale quantities, "Have" marks, add missing ingredients to groceries, add to your plan, notes, and "More like this"
 - **Cook mode:** one step at a time in large type, tap-to-start timers, and the screen stays on
-- **Plan:** plan the week, then add everything it needs (minus what's in the pantry) to the list in one tap
-- **Find new recipes:** search by ingredient from [TheMealDB](https://www.themealdb.com) and save them with one tap
-- **Pantry:** what's in your kitchen, with one-tap staples and "You can make"
-- **Shopping:** shopping list grouped by aisle; bought items move into the pantry
-- **Themes:** Stone, Sage, Cobalt and Night (dark)
+- **Plan:** pick what to cook each day, then add the whole week to groceries in one tap
+- **Groceries:** "To buy", sorted by aisle, and "At home"; bought items move to At home
+- **Find new recipes:** search [TheMealDB](https://www.themealdb.com) by ingredient and save with one tap
+- **Light, dark or automatic** appearance
 - **Installable:** add it to your phone's home screen and it works offline
 - **Backup:** everything is stored in your browser; export and import it as a JSON file
-
-Coming next: importing recipes from a link.
 
 ## Running locally
 

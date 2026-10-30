@@ -1,9 +1,8 @@
-// Colour themes. The choice is remembered on this device.
+// Light, dark, or follow the device. The choice is remembered on this device.
 export const themes = [
-  { id: 'stoneware', name: 'Stone', swatch: ['#ece5d9', '#f7f3ec', '#a0573a'] },
-  { id: 'celadon', name: 'Sage', swatch: ['#e3e9e0', '#f6f8f3', '#5d7a63'] },
-  { id: 'cobalt', name: 'Cobalt', swatch: ['#eceae4', '#fbfaf7', '#2f4f8f'] },
-  { id: 'tenmoku', name: 'Night', swatch: ['#2a201b', '#3a2e27', '#d9a46b'] },
+  { id: 'auto', name: 'Automatic', swatch: ['#ffffff', '#1c1c1e'] },
+  { id: 'light', name: 'Light', swatch: ['#ffffff', '#f2f2f4'] },
+  { id: 'dark', name: 'Dark', swatch: ['#1c1c1e', '#000000'] },
 ];
 
 const KEY = 'mise-theme';
@@ -11,16 +10,14 @@ const KEY = 'mise-theme';
 export function getTheme() {
   try {
     const saved = localStorage.getItem(KEY);
-    return themes.some((t) => t.id === saved) ? saved : 'stoneware';
+    return themes.some((t) => t.id === saved) ? saved : 'auto';
   } catch {
-    return 'stoneware';
+    return 'auto';
   }
 }
 
 export function applyTheme(id) {
   document.documentElement.dataset.theme = id;
-  const bar = { stoneware: '#ece5d9', celadon: '#e3e9e0', cobalt: '#eceae4', tenmoku: '#2a201b' }[id];
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar);
   try {
     localStorage.setItem(KEY, id);
   } catch {

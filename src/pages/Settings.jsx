@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import Icon from '../components/Icon';
 import { Link } from 'react-router-dom';
 import { exportRecipes, importRecipes } from '../lib/db';
 import { themes, getTheme, applyTheme } from '../lib/theme';
@@ -31,13 +32,11 @@ function Settings() {
 
   return (
     <div className="page">
-      <div className="crumbs">
-        <Link to="/" className="label link">&larr; Recipes</Link>
-      </div>
+      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
       <div className="panel">
-        <h1 className="display form_title">Settings</h1>
+        <h1 className="page_title">Settings</h1>
 
-        <h2 className="section_label label">Theme</h2>
+        <h2 className="group_title">Theme</h2>
         <div className="themes" role="radiogroup" aria-label="Color theme">
           {themes.map((t) => (
             <button
@@ -59,7 +58,7 @@ function Settings() {
           ))}
         </div>
 
-        <h2 className="section_label label">Backup</h2>
+        <h2 className="group_title">Backup</h2>
         <p className="small">Saved on this device only.</p>
         <div className="form_actions form_actions-left">
           <button type="button" className="button" onClick={download}>Download</button>
