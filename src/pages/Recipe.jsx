@@ -82,7 +82,7 @@ function Recipe() {
   const addMissing = async () => {
     const lines = recipe.ingredients.filter((line) => missing.has(line)).map((line) => scaleIngredient(line, factor));
     const count = await addToList(lines, recipe.title);
-    setAdded(count === 0 ? 'Already on your list' : `Added ${count} to your list`);
+    setAdded(count === 0 ? 'Already on your shopping list' : `Added ${count} to your shopping list`);
   };
 
   return (
@@ -110,7 +110,7 @@ function Recipe() {
             <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button button-primary">Start cooking</Link>
             {missing.size > 0 && (
               <button type="button" className="button button-quiet" onClick={addMissing}>
-                Add {missing.size} missing to list
+                Add {missing.size} missing to shopping list
               </button>
             )}
             <label className="select_button">
@@ -142,7 +142,7 @@ function Recipe() {
           </div>
           {added && (
             <p className="small" role="status">
-              {added} · <Link to={added.startsWith('Planned') ? '/table' : '/list'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View list'}</Link>
+              {added} · <Link to={added.startsWith('Planned') ? '/plan' : '/shopping'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View shopping list'}</Link>
             </p>
           )}
         </div>

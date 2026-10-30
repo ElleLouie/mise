@@ -127,13 +127,6 @@ button {
   color: var(--glaze);
 }
 
-.lede {
-  margin: 20px 0 0;
-  max-width: 32em;
-  font-size: 21px;
-  color: var(--muted);
-}
-
 .section_title {
   margin: 0;
   font-family: 'Instrument Serif', Georgia, serif;
@@ -514,19 +507,6 @@ button {
 }
 
 /* home */
-.hero {
-  display: grid;
-  grid-template-columns: 1fr minmax(320px, 420px);
-  gap: clamp(32px, 6vw, 80px);
-  align-items: start;
-  padding-top: clamp(28px, 5vw, 52px);
-}
-
-.hero .display {
-  margin-top: 12px;
-  font-size: clamp(50px, 6.4vw, 88px);
-}
-
 .search {
   display: block;
   flex: 1;
@@ -537,15 +517,6 @@ button {
   gap: 10px;
   margin-top: 24px;
   max-width: 640px;
-}
-
-.hero .toolbar {
-  margin-top: 32px;
-}
-
-.toolbar .button {
-  flex-shrink: 0;
-  min-height: 60px;
 }
 
 .search input {
@@ -586,56 +557,95 @@ button {
 }
 
 /* today's table: a printed menu card */
-.menu_card {
-  padding: 24px 26px 24px;
-  background: var(--paper);
+/* home */
+.page_head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page_head .page_title {
+  margin-bottom: 0;
+}
+
+.page_actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lede {
+  margin: 4px 0 0;
+  font-size: 19px;
+  color: var(--muted);
+}
+
+.how ol {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.how a {
+  display: flex;
+  gap: 14px;
+  height: 100%;
+  padding: 18px 20px;
   border: 1px solid var(--rule);
   border-radius: 12px;
-}
-
-.menu_card_title {
-  margin: 0 0 10px;
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 42px;
-  font-weight: 400;
-}
-
-.menu_card ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.menu_card li a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 0;
-  border-top: 1px solid var(--rule);
+  background: var(--paper);
   text-decoration: none;
 }
 
-.menu_card .button-full {
-  margin-top: 14px;
+.how a:hover {
+  border-color: var(--ink);
 }
 
-.menu_card_dish {
+.how_number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.how_title {
   display: block;
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 27px;
-  line-height: 1.15;
+  font-weight: 600;
 }
 
-.menu_card li a:hover .menu_card_dish {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
+.how_text {
+  display: block;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.suggest {
+  margin-top: 32px;
+}
+
+.box .search {
+  max-width: 560px;
+}
+
+.toolbar .button {
+  flex-shrink: 0;
+  min-height: 60px;
 }
 
 /* the recipe box: large, label-style cards */
 .box {
-  margin-top: clamp(44px, 7vw, 72px);
+  margin-top: 36px;
 }
 
 .section_head {
@@ -1254,11 +1264,6 @@ textarea {
 
 /* tablets and phones */
 @media (max-width: 860px) {
-  .hero,
-  .recipe_body {
-    grid-template-columns: 1fr;
-  }
-
 
 }
 
@@ -1301,20 +1306,20 @@ textarea {
     padding-bottom: 14px;
   }
 
-  .menu_card {
-    padding: 20px 20px;
-  }
-
   .masthead_right {
     gap: 0;
   }
 
-  .toolbar .button {
-    min-height: 60px;
-    padding: 0 18px;
+  .actions .button {
+    flex: 1 1 auto;
   }
 
-  .actions .button {
+  .how ol {
+    grid-template-columns: 1fr;
+  }
+
+  .page_actions,
+  .page_actions .button {
     flex: 1 1 auto;
   }
 

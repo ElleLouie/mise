@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, blankRecipe, saveRecipe } from '../lib/db';
 import { findByIngredient, lookup, toRecipe } from '../lib/mealdb';
@@ -42,13 +42,14 @@ function Discover() {
     }
   };
 
-  // ideas from the larder first
+  // ideas from the pantry first
   const ideas = [...new Set([...(larder || []).map((item) => item.name), ...IDEAS])].slice(0, 10);
   const savedTitles = new Set((saved || []).map((r) => r.title));
 
   return (
     <div className="page">
-      <h1 className="display page_title">Discover</h1>
+      <Link to="/" className="label link">&larr; Recipes</Link>
+      <h1 className="display page_title">Find new recipes</h1>
 
       <form
         className="toolbar"

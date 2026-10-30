@@ -23,7 +23,8 @@ function Larder() {
 
   return (
     <div className="page narrow">
-      <h1 className="display page_title">Larder</h1>
+      <h1 className="display page_title">Pantry</h1>
+      <p className="lede">Add what you have to see what you can cook.</p>
 
       <form
         className="toolbar"
@@ -35,8 +36,8 @@ function Larder() {
         }}
       >
         <label className="search">
-          <span className="visually_hidden">Add to larder</span>
-          <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add items" />
+          <span className="visually_hidden">Add to pantry</span>
+          <input value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. eggs, lemons, rice" />
         </label>
         <button type="submit" className="button" disabled={!text.trim()}>Add</button>
       </form>
@@ -50,7 +51,7 @@ function Larder() {
       )}
 
       <section className="panel_section">
-        <h2 className="section_label label">In your larder · {larder.length}</h2>
+        <h2 className="section_label label">In your pantry · {larder.length}</h2>
         {larder.length === 0 && <p className="empty">Nothing yet.</p>}
         <ul className="items">
           {larder.map((item) => (
@@ -64,7 +65,7 @@ function Larder() {
 
       {ready.length > 0 && (
         <section className="panel_section">
-          <h2 className="section_label label">You can make</h2>
+          <h2 className="section_label label">You can cook</h2>
           <ul className="items">
             {ready.map(({ recipe, missing }) => (
               <li key={recipe.id}>

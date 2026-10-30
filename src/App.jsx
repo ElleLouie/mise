@@ -12,10 +12,9 @@ import Table from './pages/Table';
 
 const tabs = [
   { to: '/', label: 'Recipes' },
-  { to: '/table', label: 'Table' },
-  { to: '/discover', label: 'Discover' },
-  { to: '/larder', label: 'Larder' },
-  { to: '/list', label: 'List' },
+  { to: '/plan', label: 'Plan' },
+  { to: '/pantry', label: 'Pantry' },
+  { to: '/shopping', label: 'Shopping' },
 ];
 
 // The masthead with the navigation: across the top on wide screens, a tab bar on phones.
@@ -55,13 +54,14 @@ function App() {
           <Route path="/recipe/:id/edit" element={<EditRecipe />} />
           <Route path="/recipe/:id/cook" element={<Cook />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/table" element={<Table />} />
+          <Route path="/plan" element={<Table />} />
           <Route path="/discover" element={<Discover />} />
-          <Route path="/larder" element={<Larder />} />
-          <Route path="/list" element={<List />} />
+          <Route path="/pantry" element={<Larder />} />
+          <Route path="/shopping" element={<List />} />
           {/* earlier names for these screens */}
-          <Route path="/plan" element={<Navigate to="/table" replace />} />
-          <Route path="/pantry" element={<Navigate to="/larder" replace />} />
+          <Route path="/table" element={<Navigate to="/plan" replace />} />
+          <Route path="/larder" element={<Navigate to="/pantry" replace />} />
+          <Route path="/list" element={<Navigate to="/shopping" replace />} />
           <Route path="*" element={<Soon title="Not found" text="This page doesn't exist." />} />
         </Routes>
       </main>

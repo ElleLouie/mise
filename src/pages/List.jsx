@@ -17,7 +17,8 @@ function List() {
 
   return (
     <div className="page narrow">
-      <h1 className="display page_title">List</h1>
+      <h1 className="display page_title">Shopping</h1>
+      <p className="lede">Check items off as you shop.</p>
 
       <form
         className="toolbar"
@@ -28,13 +29,13 @@ function List() {
         }}
       >
         <label className="search">
-          <span className="visually_hidden">Add to list</span>
+          <span className="visually_hidden">Add to shopping list</span>
           <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add an item" />
         </label>
         <button type="submit" className="button" disabled={!text.trim()}>Add</button>
       </form>
 
-      {items.length === 0 && <p className="empty">Your list is empty. Add items here or from a recipe.</p>}
+      {items.length === 0 && <p className="empty">Nothing to buy. Add items here, or from a recipe or your plan.</p>}
 
       {byAisle.map(([aisle, group]) => (
         <section key={aisle} className="panel_section">
@@ -61,10 +62,10 @@ function List() {
             className="button button-primary button-full"
             onClick={async () => {
               const count = await putAway();
-              setMessage(`Moved ${count} to your larder`);
+              setMessage(`Moved ${count} to your pantry`);
             }}
           >
-            Move {done} checked to larder
+            Move {done} bought to pantry
           </button>
         </div>
       )}

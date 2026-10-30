@@ -62,12 +62,13 @@ function Table() {
       const recipe = byId.get(entry.recipeId);
       count += await addToList(missingFor(recipe, larder), recipe.title);
     }
-    setMessage(count === 0 ? 'Everything is already on your list or in your larder' : `Added ${count} to your list`);
+    setMessage(count === 0 ? 'Everything is already on your shopping list or in your pantry' : `Added ${count} to your shopping list`);
   };
 
   return (
     <div className="page narrow">
-      <h1 className="display page_title">Table</h1>
+      <h1 className="display page_title">Plan</h1>
+      <p className="lede">Plan the week, then get one shopping list.</p>
 
       <div className="week_nav">
         <button type="button" className="button button-quiet button-icon" aria-label="Previous week" onClick={() => { setOffset(offset - 1); setMessage(''); }}>&larr;</button>
@@ -111,10 +112,10 @@ function Table() {
 
       {entries.length > 0 && (
         <div className="sticky_action">
-          <button type="button" className="button button-primary button-full" onClick={shop}>Add week&apos;s groceries to list</button>
+          <button type="button" className="button button-primary button-full" onClick={shop}>Add this week to shopping list</button>
         </div>
       )}
-      {message && <p className="small" role="status">{message} · <Link to="/list" className="link">View list</Link></p>}
+      {message && <p className="small" role="status">{message} · <Link to="/shopping" className="link">View shopping list</Link></p>}
     </div>
   );
 }

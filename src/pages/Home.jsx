@@ -6,12 +6,10 @@ import { canMake } from '../lib/suggest';
 import { ingredientName } from '../lib/ingredients';
 import RecipeCard from '../components/RecipeCard';
 
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-// Tonight's suggestions: ready to cook, one ingredient away, then favorites due a repeat.
-function tonight(recipes, larder) {
+// Suggestions: ready to cook with what's in the pantry, one ingredient away, or a favorite due a repeat.
+function suggestions(recipes, pantry) {
   const picks = new Map();
-  canMake(recipes, larder).forEach(({ recipe, missing }) => {
+  canMake(recipes, pantry).forEach(({ recipe, missing }) => {
     picks.set(recipe.id, { recipe, why: missing.length === 0 ? 'Ready to cook' : `Need ${ingredientName(missing[0])}` });
   });
   cookAgain(recipes).forEach((recipe) => {
@@ -20,15 +18,21 @@ function tonight(recipes, larder) {
   return [...picks.values()].slice(0, 3);
 }
 
+const STEPS = [
+  { to: '/new', title: 'Save your recipes', text: 'Add your own or find new ones.' },
+  { to: '/pantry', title: 'Add what you have', text: 'See what you can cook right now.' },
+  { to: '/plan', title: 'Plan the week', text: 'Get one shopping list for it all.' },
+];
+
 function Home() {
   const recipes = useLiveQuery(() => db.recipes.orderBy('updatedAt').reverse().toArray(), []);
-  const larder = useLiveQuery(() => db.larder.toArray(), []);
+  const pantry = useLiveQuery(() => db.larder.toArray(), []);
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState(null);
 
-  if (!recipes || !larder) return null;
+  if (!recipes || !pantry) return null;
 
-  const picks = tonight(recipes, larder);
+  const picks = suggestions(recipes, pantry);
   const tags = [...new Set(recipes.flatMap((r) => r.tags))].sort();
   const needle = query.trim().toLowerCase();
   const shown = recipes.filter((r) => (!tag || r.tags.includes(tag))
@@ -36,51 +40,62 @@ function Home() {
 
   return (
     <div className="page home">
-      <section className="hero">
-        <div className="hero_text">
-          <p className="label label-accent">{today}</p>
-          <h1 className="display">Good ingredients, <em>cooked simply.</em></h1>
-          <div className="toolbar">
-            <label className="search">
-              <span className="visually_hidden">Search recipes</span>
-              <input type="search" placeholder="Search recipes" value={query} onChange={(e) => setQuery(e.target.value)} />
-            </label>
-            <Link to="/new" className="button">+ New recipe</Link>
-          </div>
-          {tags.length > 0 && (
-            <div className="chips label" role="group" aria-label="Filter by tag">
-              <button type="button" className={`chip ${tag === null ? 'chip-on' : ''}`} aria-pressed={tag === null} onClick={() => setTag(null)}>All</button>
-              {tags.map((t) => (
-                <button key={t} type="button" className={`chip ${tag === t ? 'chip-on' : ''}`} aria-pressed={tag === t} onClick={() => setTag(tag === t ? null : t)}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          )}
+      <div className="page_head">
+        <h1 className="display page_title">Recipes</h1>
+        <div className="page_actions">
+          <Link to="/discover" className="button button-quiet">Find new recipes</Link>
+          <Link to="/new" className="button">+ New recipe</Link>
         </div>
+      </div>
 
-        <aside className="menu_card">
-          <h2 className="menu_card_title">Tonight</h2>
-          {picks.length > 0 ? (
-            <ol>
-              {picks.map(({ recipe, why }) => (
-                <li key={recipe.id}>
-                  <Link to={`/recipe/${recipe.id}`}>
-                    <span className="menu_card_dish">{recipe.title}</span>
-                    <span className={why === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{why}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="empty">Add what you have to see what you can make.</p>
-          )}
-          <Link to="/larder" className="button button-quiet button-full">Update larder</Link>
-        </aside>
-      </section>
+      {/* shown until the pantry is in use */}
+      {pantry.length === 0 && (
+        <section className="how" aria-label="How it works">
+          <ol>
+            {STEPS.map(({ to, title, text }, i) => (
+              <li key={to}>
+                <Link to={to}>
+                  <span className="how_number">{i + 1}</span>
+                  <span>
+                    <span className="how_title">{title}</span>
+                    <span className="how_text">{text}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {picks.length > 0 && (
+        <section className="suggest">
+          <h2 className="section_label label">Cook tonight</h2>
+          <ul className="items">
+            {picks.map(({ recipe, why }) => (
+              <li key={recipe.id}>
+                <Link to={`/recipe/${recipe.id}`} className="items_link">{recipe.title}</Link>
+                <span className={why === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{why}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="box">
-        <h2 className="section_title">Recipes</h2>
+        <label className="search">
+          <span className="visually_hidden">Search recipes</span>
+          <input type="search" placeholder="Search recipes or ingredients" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </label>
+        {tags.length > 0 && (
+          <div className="chips" role="group" aria-label="Filter by tag">
+            <button type="button" className={`chip ${tag === null ? 'chip-on' : ''}`} aria-pressed={tag === null} onClick={() => setTag(null)}>All</button>
+            {tags.map((t) => (
+              <button key={t} type="button" className={`chip ${tag === t ? 'chip-on' : ''}`} aria-pressed={tag === t} onClick={() => setTag(tag === t ? null : t)}>
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
         {shown.length === 0 && <p className="empty">No matches.</p>}
         <ul className="shelf">
           {shown.map((recipe) => <li key={recipe.id}><RecipeCard recipe={recipe} /></li>)}
