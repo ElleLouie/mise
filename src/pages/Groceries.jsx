@@ -14,6 +14,16 @@ const STAPLES = [
   'flour', 'sugar', 'milk', 'soy sauce', 'honey', 'parmesan', 'tomatoes', 'spinach',
 ];
 
+// a soft glaze colour for each shelf, so sections are easy to find
+const SHELF_COLORS = {
+  Produce: 'var(--peppermint)',
+  'Meat & fish': 'var(--rose)',
+  'Dairy & eggs': 'var(--icy)',
+  Bakery: 'var(--butter)',
+  Pantry: 'var(--matcha)',
+  Other: 'var(--orchid)',
+};
+
 function AddForm({ placeholder, label, onAdd }) {
   const [text, setText] = useState('');
   return (
@@ -93,6 +103,9 @@ function AtHome() {
   const have = (name) => pantry.some((item) => covers(item.name, name) || covers(name, item.name));
   const staples = STAPLES.filter((name) => !have(name));
   const ready = canMake(recipes, pantry);
+  const shelves = aisleOrder
+    .map((aisle) => [aisle, pantry.filter((item) => aisleFor(item.name) === aisle)])
+    .filter(([, items]) => items.length > 0);
 
   return (
     <>
@@ -123,20 +136,24 @@ function AtHome() {
           </ul>
         </section>
       )}
-      <section className="group">
-        <h2 className="group_title">At home · {pantry.length}</h2>
-        {pantry.length === 0 && <p className="empty">Add what you have to see what you can cook.</p>}
-        <ul className="rows">
-          {pantry.map((item) => (
-            <li key={item.name} className="row">
-              <span className="row_text">{item.name}</span>
-              <button type="button" className="icon_button" aria-label={`Remove ${item.name}`} onClick={() => removeFromLarder(item.name)}>
-                <Icon name="close" size={16} />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {pantry.length === 0 && <p className="empty">Add what you have to see what you can cook.</p>}
+      <div className="shelves">
+        {shelves.map(([aisle, items]) => (
+          <section key={aisle} className="shelf" style={{ '--shelf': SHELF_COLORS[aisle] }}>
+            <h2 className="shelf_title">{aisle} <span>{items.length}</span></h2>
+            <ul className="stock">
+              {items.map((item) => (
+                <li key={item.name}>
+                  <span>{item.name}</span>
+                  <button type="button" aria-label={`Remove ${item.name}`} onClick={() => removeFromLarder(item.name)}>
+                    <Icon name="close" size={14} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </>
   );
 }
