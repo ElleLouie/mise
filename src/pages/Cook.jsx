@@ -95,7 +95,7 @@ function Cook() {
   return (
     <div className="cook">
       <header className="cook_head">
-        <Link to={`/recipe/${id}`} className="label">&times; Close</Link>
+        <Link to={`/recipe/${id}`} className="label link">&times; Close</Link>
         <span className="label">{recipe.title}</span>
         <button type="button" className="label link" aria-expanded={showIngredients} onClick={() => setShowIngredients(!showIngredients)}>
           Ingredients

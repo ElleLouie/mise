@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, blankRecipe, saveRecipe } from '../lib/db';
-import { glazes, foods, glazeFor, foodFor } from '../lib/vessels';
-import Vessel from '../components/Vessel';
 
 const lines = (text) => text.split('\n').map((line) => line.trim()).filter(Boolean);
 
@@ -17,8 +15,6 @@ function Form({ recipe, isNew }) {
     ingredients: recipe.ingredients.join('\n'),
     steps: recipe.steps.join('\n'),
     source: recipe.source,
-    vessel: glazeFor(recipe),
-    food: foodFor(recipe),
   }));
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
@@ -33,8 +29,6 @@ function Form({ recipe, isNew }) {
       ingredients: lines(form.ingredients),
       steps: lines(form.steps),
       source: form.source.trim(),
-      vessel: form.vessel,
-      food: form.food,
     });
     navigate(`/recipe/${recipe.id}`, { replace: true });
   };
@@ -77,32 +71,6 @@ function Form({ recipe, isNew }) {
           <span className="label">Original link (optional)</span>
           <input type="url" value={form.source} onChange={set('source')} placeholder="https://" />
         </label>
-        <fieldset className="vessel_picker">
-          <legend className="label">Served in</legend>
-          <div className="vessel_options">
-            {Object.entries(glazes).map(([key, glaze]) => (
-              <label key={key} className={form.vessel === key ? 'vessel_option vessel_option-on' : 'vessel_option'}>
-                <input type="radio" name="vessel" value={key} checked={form.vessel === key} onChange={set('vessel')} />
-                <Vessel recipe={recipe} glaze={key} food={form.food} />
-                <span className="label">{glaze.name}</span>
-              </label>
-            ))}
-          </div>
-          <div className="food_options" role="radiogroup" aria-label="Colours of the dish">
-            {Object.entries(foods).map(([key, [base, light, accent]]) => (
-              <button
-                key={key}
-                type="button"
-                role="radio"
-                aria-checked={form.food === key}
-                aria-label={key}
-                className={form.food === key ? 'food_option food_option-on' : 'food_option'}
-                style={{ background: `conic-gradient(${base} 0 50%, ${light} 50% 80%, ${accent} 80%)` }}
-                onClick={() => setForm({ ...form, food: key })}
-              />
-            ))}
-          </div>
-        </fieldset>
         <button type="submit" className="button button-big">{isNew ? 'Add to the recipe box' : 'Save changes'}</button>
       </form>
     </div>

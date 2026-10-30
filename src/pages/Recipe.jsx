@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveRecipe, deleteRecipe, addNote, recipeNumbers } from '../lib/db';
+import { db, saveRecipe, deleteRecipe, addNote } from '../lib/db';
 import { scaleIngredient, keyIngredients } from '../lib/ingredients';
 import { formatTime, formatDate } from '../lib/format';
-import { glazes, glazeFor } from '../lib/vessels';
-import Vessel from '../components/Vessel';
 import Soon from './Soon';
 
 function hostname(url) {
@@ -61,14 +59,12 @@ function Recipe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const recipe = useLiveQuery(() => db.recipes.get(id), [id], 'loading');
-  const all = useLiveQuery(() => db.recipes.toArray(), []);
   const [servings, setServings] = useState(null);
   const [checked, setChecked] = useState(() => new Set());
 
   if (recipe === 'loading') return null;
   if (!recipe) return <Soon title="Not found" text="This recipe isn't in the box anymore." />;
 
-  const number = all ? recipeNumbers(all).get(id) : '';
   const portions = servings ?? recipe.servings;
   const factor = portions / recipe.servings;
   const toggle = (i) => setChecked((prev) => {
@@ -95,12 +91,10 @@ function Recipe() {
       </div>
 
       <header className="recipe_head">
-        <Vessel recipe={recipe} className="recipe_vessel" />
         <div className="recipe_label">
-          <div className="jar_row label">
-            <span>No. {number}</span>
-            <span>{recipe.tags.join(' · ')}</span>
-          </div>
+          {recipe.tags.length > 0 && (
+            <div className="jar_row">{recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
+          )}
           <h1 className="display recipe_title">{recipe.title}</h1>
           <dl className="facts">
             <div><dt className="label">Time</dt><dd>{formatTime(recipe.minutes)}</dd></div>
@@ -115,7 +109,6 @@ function Recipe() {
             </div>
             <div className="facts_wide"><dt className="label">Key</dt><dd>{keyIngredients(recipe.ingredients).join(' · ')}</dd></div>
           </dl>
-          <p className="jar_ware">Served in · {glazes[glazeFor(recipe)].name}</p>
           <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button button-big">Start cooking</Link>
         </div>
       </header>

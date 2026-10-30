@@ -8,7 +8,7 @@ db.version(1).stores({
   recipes: 'id, title, updatedAt, lastCookedAt, *tags',
 });
 
-// v2: index creation date, used to number recipes like jars on a shelf (No. 001, No. 002…)
+// v2: index creation date
 db.version(2).stores({
   recipes: 'id, title, createdAt, updatedAt, lastCookedAt, *tags',
 });
@@ -29,8 +29,6 @@ export function blankRecipe() {
     ingredients: [],
     steps: [],
     source: '',
-    vessel: null,
-    food: null,
     favorite: false,
     notes: [],
     createdAt: now,
@@ -51,12 +49,6 @@ export async function addNote(recipe, { text, rating }) {
 }
 
 const DAY = 24 * 60 * 60 * 1000;
-
-// "No. 012": a recipe's place in the box, by when it was added
-export function recipeNumbers(recipes) {
-  const sorted = [...recipes].sort((a, b) => a.createdAt - b.createdAt);
-  return new Map(sorted.map((recipe, i) => [recipe.id, String(i + 1).padStart(3, '0')]));
-}
 
 // Favorites and well-rated recipes you haven't made in two weeks or more.
 export function cookAgain(recipes) {

@@ -37,7 +37,7 @@ function Settings() {
       <div className="panel">
         <h1 className="display form_title">Settings</h1>
 
-        <h2 className="section_label label">Glaze</h2>
+        <h2 className="section_label label">Theme</h2>
         <div className="themes" role="radiogroup" aria-label="Color theme">
           {themes.map((t) => (
             <button

@@ -1,9 +1,9 @@
-// Colour themes, named after glazes. The choice is remembered on this device.
+// Colour themes. The choice is remembered on this device.
 export const themes = [
-  { id: 'stoneware', name: 'Stoneware', swatch: ['#ece5d9', '#f7f3ec', '#a0573a'] },
-  { id: 'celadon', name: 'Celadon', swatch: ['#e3e9e0', '#f6f8f3', '#5d7a63'] },
+  { id: 'stoneware', name: 'Stone', swatch: ['#ece5d9', '#f7f3ec', '#a0573a'] },
+  { id: 'celadon', name: 'Sage', swatch: ['#e3e9e0', '#f6f8f3', '#5d7a63'] },
   { id: 'cobalt', name: 'Cobalt', swatch: ['#eceae4', '#fbfaf7', '#2f4f8f'] },
-  { id: 'tenmoku', name: 'Tenmoku', swatch: ['#2a201b', '#3a2e27', '#d9a46b'] },
+  { id: 'tenmoku', name: 'Night', swatch: ['#2a201b', '#3a2e27', '#d9a46b'] },
 ];
 
 const KEY = 'mise-theme';

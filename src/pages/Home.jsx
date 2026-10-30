@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, cookAgain, recipeNumbers } from '../lib/db';
+import { db, cookAgain } from '../lib/db';
 import { keyIngredients } from '../lib/ingredients';
 import { formatTime } from '../lib/format';
-import { glazes, glazeFor } from '../lib/vessels';
-import Vessel from '../components/Vessel';
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -26,7 +24,6 @@ function Home() {
 
   if (!recipes) return null;
 
-  const numbers = recipeNumbers(recipes);
   const again = cookAgain(recipes);
   const table = [...again, ...recipes.filter((r) => !again.includes(r))].slice(0, 3);
 
@@ -68,7 +65,7 @@ function Home() {
               {table.map((recipe, i) => (
                 <li key={recipe.id}>
                   <Link to={`/recipe/${recipe.id}`}>
-                    <span className="menu_card_no label">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="menu_card_no label">{i + 1}</span>
                     <span>
                       <span className="menu_card_dish">{recipe.title}</span>
                       <span className="menu_card_why">{reason(recipe, again.includes(recipe))}</span>
@@ -91,19 +88,16 @@ function Home() {
           {shown.map((recipe) => (
             <li key={recipe.id}>
               <Link to={`/recipe/${recipe.id}`} className="jar">
-                <Vessel recipe={recipe} className="jar_vessel" />
                 <div className="jar_label">
-                  <div className="jar_row label">
-                    <span>No. {numbers.get(recipe.id)}</span>
-                    <span>{recipe.tags[0] ?? ''}</span>
-                  </div>
+                  {recipe.tags.length > 0 && (
+                    <div className="jar_row">{recipe.tags.slice(0, 3).map((t) => <span key={t} className="tag">{t}</span>)}</div>
+                  )}
                   <h3 className="jar_title">{recipe.title}</h3>
                   <dl className="facts">
                     <div><dt className="label">Time</dt><dd>{formatTime(recipe.minutes)}</dd></div>
                     <div><dt className="label">Serves</dt><dd>{recipe.servings}</dd></div>
                     <div className="facts_wide"><dt className="label">Key</dt><dd>{keyIngredients(recipe.ingredients).join(' · ')}</dd></div>
                   </dl>
-                  <p className="jar_ware">Served in · {glazes[glazeFor(recipe)].name}</p>
                 </div>
               </Link>
             </li>
