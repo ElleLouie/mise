@@ -5,6 +5,8 @@ const DAY = 24 * 60 * 60 * 1000;
 const recipes = [
   {
     title: 'Lemony white bean pasta',
+    vessel: 'stoneware',
+    food: 'golden',
     servings: 2,
     minutes: 25,
     tags: ['quick', 'weeknight', 'vegetarian'],
@@ -28,6 +30,8 @@ const recipes = [
   },
   {
     title: 'Miso butter salmon',
+    vessel: 'celadon',
+    food: 'salmon',
     servings: 2,
     minutes: 25,
     tags: ['quick', 'weeknight'],
@@ -50,6 +54,8 @@ const recipes = [
   },
   {
     title: 'Crispy rice salad',
+    vessel: 'cobalt',
+    food: 'greens',
     servings: 4,
     minutes: 30,
     tags: ['fresh', 'vegetarian'],
@@ -74,6 +80,8 @@ const recipes = [
   },
   {
     title: 'Brown butter chocolate chip cookies',
+    vessel: 'shino',
+    food: 'bake',
     servings: 24,
     minutes: 45,
     tags: ['baking', 'sweet'],
@@ -101,15 +109,16 @@ const recipes = [
 
 export default function sampleRecipes() {
   const now = Date.now();
-  return recipes.map(({ notes = [], ...recipe }, i) => {
+  // the oldest sample becomes No. 001
+  return recipes.map(({ notes = [], ...recipe }, i, list) => {
     const datedNotes = notes.map(({ daysAgo, ...note }) => ({ ...note, id: crypto.randomUUID(), date: now - daysAgo * DAY }));
     return {
       ...recipe,
       id: crypto.randomUUID(),
       source: '',
       notes: datedNotes,
-      createdAt: now - i * 1000,
-      updatedAt: now - i * 1000,
+      createdAt: now - (list.length - i) * 1000,
+      updatedAt: now - (list.length - i) * 1000,
       lastCookedAt: datedNotes[0]?.date ?? null,
     };
   });

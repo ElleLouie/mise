@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
 
-// A placeholder ticket for screens that come in later steps.
+// A placeholder for screens that come in later steps.
 function Soon({ title, text }) {
   return (
     <div className="page">
-      <header className="head">
-        <h1 className="logo">{title}</h1>
-      </header>
-      <div className="receipt receipt-note">
-        <h2 className="receipt_title">Coming soon</h2>
-        <p>{text}</p>
-        <Link to="/" className="receipt_add">&larr; Back to recipes</Link>
+      <div className="panel soon">
+        <p className="label label-accent">Coming soon</p>
+        <h1 className="display">{title}</h1>
+        <p className="lede">{text}</p>
+        <Link to="/" className="label link">&larr; Back to the recipe box</Link>
       </div>
     </div>
   );

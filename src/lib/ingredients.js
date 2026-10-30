@@ -54,3 +54,14 @@ export function scaleIngredient(line, factor) {
   const range = quantityMax === null ? '' : `–${formatQuantity(quantityMax * factor)}`;
   return `${amount}${range}${gap}${rest}`.trim();
 }
+
+const UNITS = /^(?:g|kg|ml|l|oz|lb|lbs|cups?|tbsp|tsp|tablespoons?|teaspoons?|cans?|cloves?|handfuls?|slices?|pinch(?:es)?|bunch(?:es)?|sprigs?|pieces?)\b\.?\s*/i;
+const SEASONING = /^(?:salt|pepper|salt and pepper|water)\b/i;
+
+// The main ingredients by name only: "1 can (400g) white beans, drained" becomes "white beans".
+export function keyIngredients(lines, count = 3) {
+  return lines
+    .map((line) => parseIngredient(line).rest.replace(UNITS, '').replace(/\([^)]*\)/g, '').split(',')[0].replace(/^of\s+/i, '').trim())
+    .filter((name) => name && !SEASONING.test(name))
+    .slice(0, count);
+}

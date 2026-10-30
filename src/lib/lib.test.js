@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIngredient, formatQuantity, scaleIngredient } from './ingredients.js';
+import { parseIngredient, formatQuantity, scaleIngredient, keyIngredients } from './ingredients.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -50,4 +50,12 @@ test('splits steps around timers', () => {
 test('formats clocks', () => {
   assert.equal(formatClock(65), '1:05');
   assert.equal(formatClock(3725), '1:02:05');
+});
+
+test('picks key ingredients by name', () => {
+  assert.deepEqual(
+    keyIngredients(['200g short pasta', '1 can (400g) white beans, drained', 'Salt and pepper', '3 tbsp olive oil', '1 lemon, zested']),
+    ['short pasta', 'white beans', 'olive oil'],
+  );
+  assert.deepEqual(keyIngredients(['2 cloves garlic', '1 cup of rice'], 2), ['garlic', 'rice']);
 });

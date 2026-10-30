@@ -95,9 +95,9 @@ function Cook() {
   return (
     <div className="cook">
       <header className="cook_head">
-        <Link to={`/recipe/${id}`} className="mono_label">&times; Close</Link>
-        <span className="mono_label">{recipe.title}</span>
-        <button type="button" className="mono_label text_button" aria-expanded={showIngredients} onClick={() => setShowIngredients(!showIngredients)}>
+        <Link to={`/recipe/${id}`} className="label">&times; Close</Link>
+        <span className="label">{recipe.title}</span>
+        <button type="button" className="label link" aria-expanded={showIngredients} onClick={() => setShowIngredients(!showIngredients)}>
           Ingredients
         </button>
       </header>
@@ -121,13 +121,13 @@ function Cook() {
       >
         {finished ? (
           <>
-            <p className="mono_label">Order up</p>
+            <p className="label label-accent">All done</p>
             <p className="cook_text">Enjoy! Add a note about how it went so you remember next time.</p>
             <Link to={`/recipe/${id}`} className="button button-big">Write a note</Link>
           </>
         ) : (
           <>
-            <p className="mono_label">Step {step + 1} of {total}</p>
+            <p className="label">Step {step + 1} of {total}</p>
             <p className="cook_text">
               {splitStep(recipe.steps[step]).map((part, i) => (part.timer ? (
                 <button key={i} type="button" className="timer_chip" onClick={() => start(part.timer.label, part.timer.seconds)}>
@@ -144,15 +144,15 @@ function Cook() {
           {timers.map((t) => (
             <li key={t.id} className={t.endsAt <= now ? 'timer timer-done' : 'timer'}>
               <span className="timer_clock">{t.endsAt <= now ? 'Done!' : formatClock((t.endsAt - now) / 1000)}</span>
-              <span className="mono_label">{t.label}</span>
-              <button type="button" className="text_button" onClick={() => stop(t.id)}>{t.endsAt <= now ? 'OK' : 'Stop'}</button>
+              <span className="label">{t.label}</span>
+              <button type="button" className="label link" onClick={() => stop(t.id)}>{t.endsAt <= now ? 'OK' : 'Stop'}</button>
             </li>
           ))}
         </ul>
       )}
 
       <nav className="cook_nav">
-        <button type="button" className="button button-ghost" onClick={() => go(step - 1)} disabled={step === 0}>&larr; Back</button>
+        <button type="button" className="button button-quiet" onClick={() => go(step - 1)} disabled={step === 0}>&larr; Back</button>
         <button type="button" className="button" onClick={() => go(step + 1)} disabled={finished}>{step === total - 1 ? 'Finish' : 'Next'} &rarr;</button>
       </nav>
     </div>

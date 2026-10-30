@@ -31,13 +31,13 @@ function Settings() {
 
   return (
     <div className="page">
-      <header className="subhead">
-        <Link to="/" className="mono_label">&larr; Recipe box</Link>
-      </header>
-      <div className="order">
-        <div className="order_top"><span>Settings</span></div>
+      <div className="crumbs">
+        <Link to="/" className="label link">&larr; The recipe box</Link>
+      </div>
+      <div className="panel">
+        <h1 className="display form_title">Settings</h1>
 
-        <h2 className="order_section">Colors</h2>
+        <h2 className="section_label label">Glaze</h2>
         <div className="themes" role="radiogroup" aria-label="Color theme">
           {themes.map((t) => (
             <button
@@ -54,16 +54,16 @@ function Settings() {
               <span className="theme_swatch" aria-hidden="true">
                 {t.swatch.map((c) => <i key={c} style={{ background: c }} />)}
               </span>
-              <span className="mono_label">{t.name}</span>
+              <span className="label">{t.name}</span>
             </button>
           ))}
         </div>
 
-        <h2 className="order_section">Backup</h2>
+        <h2 className="section_label label">Backup</h2>
         <p className="small">Recipes are saved in this browser on this device. Download a backup now and then, or to move your recipes to another device.</p>
         <div className="form_actions form_actions-left">
           <button type="button" className="button" onClick={download}>Download backup</button>
-          <button type="button" className="button button-ghost" onClick={() => fileInput.current.click()}>Import backup</button>
+          <button type="button" className="button button-quiet" onClick={() => fileInput.current.click()}>Import backup</button>
           <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={upload} />
         </div>
         {message && <p className="small" role="status">{message}</p>}

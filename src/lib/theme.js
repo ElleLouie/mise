@@ -1,24 +1,25 @@
-// Colour themes for the kitchen pass. The choice is remembered on this device.
+// Colour themes, named after glazes. The choice is remembered on this device.
 export const themes = [
-  { id: 'steel', name: 'Steel', swatch: ['#d4d8db', '#fffef9', '#e0312b'] },
-  { id: 'tomato', name: 'Tomato', swatch: ['#f1e6d2', '#fffaf0', '#d6402c'] },
-  { id: 'kraft', name: 'Kraft', swatch: ['#c8a97e', '#fffdf6', '#1b1b1b'] },
-  { id: 'night', name: 'Night shift', swatch: ['#1e2431', '#f5efe2', '#f2b134'] },
+  { id: 'stoneware', name: 'Stoneware', swatch: ['#ece5d9', '#f7f3ec', '#a0573a'] },
+  { id: 'celadon', name: 'Celadon', swatch: ['#e3e9e0', '#f6f8f3', '#5d7a63'] },
+  { id: 'cobalt', name: 'Cobalt', swatch: ['#eceae4', '#fbfaf7', '#2f4f8f'] },
+  { id: 'tenmoku', name: 'Tenmoku', swatch: ['#2a201b', '#3a2e27', '#d9a46b'] },
 ];
 
 const KEY = 'mise-theme';
 
 export function getTheme() {
   try {
-    return localStorage.getItem(KEY) || 'steel';
+    const saved = localStorage.getItem(KEY);
+    return themes.some((t) => t.id === saved) ? saved : 'stoneware';
   } catch {
-    return 'steel';
+    return 'stoneware';
   }
 }
 
 export function applyTheme(id) {
   document.documentElement.dataset.theme = id;
-  const bar = { steel: '#1b1b1b', tomato: '#2b2420', kraft: '#1b1b1b', night: '#12161f' }[id];
+  const bar = { stoneware: '#ece5d9', celadon: '#e3e9e0', cobalt: '#eceae4', tenmoku: '#2a201b' }[id];
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar);
   try {
     localStorage.setItem(KEY, id);

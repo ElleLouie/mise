@@ -1,14 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#1b1b1b"/>
-  <rect x="96" y="70" width="320" height="22" rx="6" fill="#9aa1a6"/>
-  <path d="M136 84h240v318l-20 20-20-20-20 20-20-20-20 20-20-20-20 20-20-20-20 20-20-20-20 20-20-20z" fill="#fffef9"/>
-  <rect x="226" y="76" width="60" height="22" rx="6" fill="#7b8287"/>
-  <rect x="166" y="136" width="180" height="22" fill="#1b1b1b"/>
-  <rect x="166" y="174" width="130" height="22" fill="#1b1b1b"/>
-  <rect x="166" y="232" width="180" height="8" fill="#c9c9c2"/>
-  <rect x="166" y="256" width="150" height="8" fill="#c9c9c2"/>
-  <g transform="rotate(-8 256 330)">
-    <rect x="176" y="302" width="160" height="56" fill="none" stroke="#e0312b" stroke-width="10"/>
-    <rect x="200" y="324" width="112" height="12" fill="#e0312b"/>
-  </g>
+  <defs>
+    <radialGradient id="outer" cx=".38" cy=".32" r=".78"><stop offset="0" stop-color="#e9efe6"/><stop offset=".75" stop-color="#b9cbb6"/><stop offset="1" stop-color="#93a893"/></radialGradient>
+    <radialGradient id="inner" cx=".6" cy=".62" r=".8"><stop offset="0" stop-color="#eef3eb"/><stop offset="1" stop-color="#c7d6c4"/></radialGradient>
+    <radialGradient id="dish" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f2a77e"/><stop offset="1" stop-color="#d9724a"/></radialGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#ece5d9"/>
+  <ellipse cx="274" cy="282" rx="186" ry="176" fill="rgba(90,74,58,.28)" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="184" fill="url(#outer)"/>
+  <circle cx="256" cy="256" r="134" fill="url(#inner)" stroke="rgba(0,0,0,.08)" stroke-width="3"/>
+  <ellipse cx="256" cy="252" rx="92" ry="80" fill="url(#dish)"/>
+  <circle cx="222" cy="230" r="18" fill="#f2a77e"/>
+  <circle cx="294" cy="276" r="13" fill="#6f8f47"/>
+  <circle cx="216" cy="290" r="10" fill="#6f8f47"/>
 </svg>
