@@ -7,6 +7,7 @@ import { missingFor, canMake, similar } from './suggest.js';
 import { aisleFor } from './aisles.js';
 import { toRecipe } from './mealdb.js';
 import { weekDays, isoDate } from './week.js';
+import { pieceFor, compose } from './illustrate.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -136,4 +137,26 @@ test('lists the days of a week, Monday first', () => {
   assert.equal(weekDays(1, thursday)[0], '2026-11-02');
   assert.equal(weekDays(0, new Date(2026, 10, 1))[0], '2026-10-26');
   assert.equal(isoDate(new Date(2026, 0, 5)), '2026-01-05');
+});
+
+test('picks a piece for each ingredient', () => {
+  assert.equal(pieceFor('blood oranges').kind, 'slice');
+  assert.deepEqual(pieceFor('blood oranges').colors, pieceFor('blood orange').colors);
+  assert.equal(pieceFor('salmon fillets').kind, 'fillet');
+  assert.equal(pieceFor('spinach').kind, 'leaf');
+  assert.equal(pieceFor('rice').kind, 'dots');
+  assert.equal(pieceFor('olive oil'), null);
+  assert.equal(pieceFor('jackfruit').kind, 'chunk');
+});
+
+test('composes the same picture for the same recipe', () => {
+  const salad = { id: 'x1', tags: ['fresh'], ingredients: ['3 blood oranges', '1 ball burrata', 'handful arugula', '2 tbsp olive oil'] };
+  const a = compose(salad);
+  assert.equal(a.vessel, 'platter');
+  assert.deepEqual(a, compose(salad));
+  assert.ok(a.pieces.some((p) => p.kind === 'slice'));
+  assert.ok(a.pieces.every((p) => p.x > 0 && p.x < 400 && p.y > 0 && p.y < 400));
+  assert.equal(compose({ id: 'c', tags: ['baking'], ingredients: ['flour', '2 cups chocolate chips'] }).vessel, 'tray');
+  assert.equal(compose({ id: 'b', tags: [], ingredients: [] }).vessel, 'bowl');
+  assert.ok(compose({ id: 'b', tags: [], ingredients: [] }).pieces.length > 0);
 });

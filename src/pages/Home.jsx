@@ -4,9 +4,11 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, cookAgain } from '../lib/db';
 import { canMake } from '../lib/suggest';
 import { ingredientName } from '../lib/ingredients';
+import { formatTime } from '../lib/format';
+import { jewelFor } from '../lib/illustrate';
+import { weekDays } from '../lib/week';
 import RecipeCard from '../components/RecipeCard';
-
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+import Dish from '../components/Dish';
 
 // Tonight's suggestions: ready to cook, one ingredient away, then favorites due a repeat.
 function tonight(recipes, larder) {
@@ -15,7 +17,7 @@ function tonight(recipes, larder) {
     picks.set(recipe.id, { recipe, why: missing.length === 0 ? 'Ready to cook' : `Need ${ingredientName(missing[0])}` });
   });
   cookAgain(recipes).forEach((recipe) => {
-    if (!picks.has(recipe.id)) picks.set(recipe.id, { recipe, why: 'Favorite' });
+    if (!picks.has(recipe.id)) picks.set(recipe.id, { recipe, why: 'A favorite' });
   });
   return [...picks.values()].slice(0, 3);
 }
@@ -23,12 +25,16 @@ function tonight(recipes, larder) {
 function Home() {
   const recipes = useLiveQuery(() => db.recipes.orderBy('updatedAt').reverse().toArray(), []);
   const larder = useLiveQuery(() => db.larder.toArray(), []);
+  const week = weekDays(0);
+  const planned = useLiveQuery(() => db.plan.where('date').between(week[0], week[6], true, true).count(), [week[0]]);
+  const listCount = useLiveQuery(() => db.list.where('done').equals(0).count(), []);
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState(null);
 
   if (!recipes || !larder) return null;
 
   const picks = tonight(recipes, larder);
+  const feature = picks[0] ?? (recipes[0] && { recipe: recipes[0], why: 'From your box' });
   const tags = [...new Set(recipes.flatMap((r) => r.tags))].sort();
   const needle = query.trim().toLowerCase();
   const shown = recipes.filter((r) => (!tag || r.tags.includes(tag))
@@ -37,52 +43,74 @@ function Home() {
   return (
     <div className="page home">
       <section className="hero">
-        <div className="hero_text">
-          <p className="label label-accent">{today}</p>
-          <h1 className="display">Good ingredients, <em>cooked simply.</em></h1>
+        {feature && (
+          <div className="feature">
+            {feature.recipe.image
+              ? <img src={feature.recipe.image} alt="" className="feature_art" />
+              : <Dish recipe={feature.recipe} className="feature_art" />}
+            <div className="feature_card">
+              <p className="kicker">Tonight · {feature.why}</p>
+              <Link to={`/recipe/${feature.recipe.id}`} className="feature_title">{feature.recipe.title}</Link>
+              <div className="feature_row">
+                <Link to={`/recipe/${feature.recipe.id}/cook`} className="button">Start cooking</Link>
+                <span className="pill">{formatTime(feature.recipe.minutes)}</span>
+                <span className="pill">Serves {feature.recipe.servings}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="hero_side">
+          <h1 className="display">What are we <em>making</em> tonight?</h1>
           <div className="toolbar">
             <label className="search">
               <span className="visually_hidden">Search recipes</span>
               <input type="search" placeholder="Search recipes" value={query} onChange={(e) => setQuery(e.target.value)} />
             </label>
-            <Link to="/new" className="button">+ New recipe</Link>
+            <Link to="/new" className="button">+ New</Link>
           </div>
           {tags.length > 0 && (
-            <div className="chips label" role="group" aria-label="Filter by tag">
+            <div className="chips" role="group" aria-label="Filter by tag">
               <button type="button" className={`chip ${tag === null ? 'chip-on' : ''}`} aria-pressed={tag === null} onClick={() => setTag(null)}>All</button>
               {tags.map((t) => (
-                <button key={t} type="button" className={`chip ${tag === t ? 'chip-on' : ''}`} aria-pressed={tag === t} onClick={() => setTag(tag === t ? null : t)}>
+                <button
+                  key={t}
+                  type="button"
+                  className={`chip chip-jewel ${tag === t ? 'chip-on' : ''}`}
+                  style={{ '--jewel': jewelFor(t) }}
+                  aria-pressed={tag === t}
+                  onClick={() => setTag(tag === t ? null : t)}
+                >
                   {t}
                 </button>
               ))}
             </div>
           )}
-        </div>
-
-        <aside className="menu_card">
-          <h2 className="menu_card_title">Tonight</h2>
-          {picks.length > 0 ? (
-            <ol>
-              {picks.map(({ recipe, why }) => (
+          <div className="stats">
+            <Link to="/table"><b>{planned ?? 0}</b>planned this week</Link>
+            <Link to="/larder"><b>{larder.length}</b>in your larder</Link>
+            <Link to="/list"><b>{listCount ?? 0}</b>on your list</Link>
+          </div>
+          {picks.length > 1 && (
+            <ul className="also">
+              {picks.slice(1).map(({ recipe, why }) => (
                 <li key={recipe.id}>
-                  <Link to={`/recipe/${recipe.id}`}>
-                    <span className="menu_card_dish">{recipe.title}</span>
-                    <span className={why === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{why}</span>
-                  </Link>
+                  <Link to={`/recipe/${recipe.id}`}>{recipe.title}</Link>
+                  <span className={why === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{why}</span>
                 </li>
               ))}
-            </ol>
-          ) : (
-            <p className="empty">Add what you have to see what you can make.</p>
+            </ul>
           )}
-          <Link to="/larder" className="button button-quiet button-full">Update larder</Link>
-        </aside>
+        </div>
       </section>
 
       <section className="box">
-        <h2 className="section_title">Recipes</h2>
+        <div className="section_head">
+          <h2 className="section_title">The box</h2>
+          <span className="small">{recipes.length} recipes</span>
+        </div>
         {shown.length === 0 && <p className="empty">No matches.</p>}
-        <ul className="shelf">
+        <ul className="bento">
           {shown.map((recipe) => <li key={recipe.id}><RecipeCard recipe={recipe} /></li>)}
         </ul>
       </section>

@@ -7,6 +7,7 @@ import { missingFor, similar } from '../lib/suggest';
 import { formatTime, formatDate } from '../lib/format';
 import { weekDays, dayLabel, today } from '../lib/week';
 import RecipeCard from '../components/RecipeCard';
+import Dish from '../components/Dish';
 import Soon from './Soon';
 
 function hostname(url) {
@@ -91,11 +92,13 @@ function Recipe() {
         <Link to="/" className="label link">&larr; Recipes</Link>
       </div>
 
-      <header className="recipe_label">
-        {recipe.image && <img src={recipe.image} alt="" className="recipe_photo" />}
-        <div className="recipe_label_text">
+      <header className="recipe_head">
+        {recipe.image
+          ? <img src={recipe.image} alt="" className="recipe_art" />
+          : <Dish recipe={recipe} className="recipe_art" />}
+        <div className="recipe_label">
           {recipe.tags.length > 0 && (
-            <div className="jar_row">{recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
+            <div className="tag_row">{recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
           )}
           <h1 className="display recipe_title">{recipe.title}</h1>
           <div className="recipe_meta">
@@ -196,8 +199,8 @@ function Recipe() {
       {recipes && similar(recipe, recipes).length > 0 && (
         <section className="related">
           <h2 className="section_title">More like this</h2>
-          <ul className="shelf shelf-compact">
-            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} compact /></li>)}
+          <ul className="bento bento-small">
+            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} /></li>)}
           </ul>
         </section>
       )}

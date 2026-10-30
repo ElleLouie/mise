@@ -4,7 +4,7 @@ A recipe box that cooks with you: calm, warm and easy to read from across the ki
 
 ## Features
 
-- **Recipes:** add, edit, search and tag recipes, mark favorites
+- **Recipes:** add, edit, search and tag recipes, mark favorites; each recipe gets an animated cut-paper illustration made from its ingredients, or shows its photo
 - **Tonight:** suggestions that are ready to cook with what you have, one ingredient away, or favorites due a repeat
 - **Recipe page:** servings stepper that rescales quantities, "Have" marks for what's in your larder, add missing ingredients to your list, notes, and "More like this"
 - **Cook mode:** one step at a time in large type, tap-to-start timers, and the screen stays on
