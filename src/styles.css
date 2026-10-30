@@ -1,17 +1,32 @@
 /* mise: a calm, native-feeling recipe app. System type, grouped sections, one coral accent. */
 
 :root {
-  /* matcha paper, near-white cards, deep plum for actions; glaze pastels for accents */
-  --bg: #eef0e6;
-  --surface: #f9faf4;
-  --surface-strong: #e2e5d6;
-  --ink: #22261e;
-  --muted: #6f7566;
-  --rule: rgba(34, 38, 30, 0.12);
-  --accent: #5e2140;
-  --accent-ink: #ffffff;
-  --accent-text: #5e2140;
-  --ready: #4f6b2a;
+  /* deep plum, olive and cream: oxblood leather, raspberries and glossy olives */
+  --bg: #2a0f1a;
+  --surface: #3a1625;
+  --surface-strong: #4b1d31;
+  --ink: #f4ead9;
+  --muted: #c4a9a6;
+  --rule: rgba(244, 234, 217, 0.12);
+  --accent: #a7b23a;
+  --accent-ink: #1f2408;
+  --accent-text: #c3cc5a;
+  --ready: #c3cc5a;
+  --placeholder-ink: rgba(244, 234, 217, 0.35);
+  --tile-1: #4b1d31;
+  --tile-2: #3b3f17;
+  --tile-3: #5a1424;
+  --tile-4: #452033;
+  --tile-5: #34391a;
+  --tile-6: #5c2a3c;
+  --how-1: #3b3f17;
+  --how-2: #4b1d31;
+  --how-3: #5a1424;
+  --how-ink: #f4ead9;
+  --how-icon: #c3cc5a;
+  --shelf-mix: 22%;
+  --chip: rgba(244, 234, 217, 0.08);
+  color-scheme: dark;
   --matcha: #c4c48b;
   --butter: #fddd92;
   --orchid: #d4c0dc;
@@ -21,38 +36,65 @@
   --radius: 16px;
   --font: 'Inter Tight Variable', system-ui, sans-serif;
   --display: 'Newsreader Variable', Georgia, serif;
+}
+
+/* the light alternative: cream, with plum buttons and olive details */
+:root[data-theme='light'] {
+  --bg: #f6f1e7;
+  --surface: #fffaf1;
+  --surface-strong: #ece4d6;
+  --ink: #2a0f1a;
+  --muted: #7a6366;
+  --rule: rgba(42, 15, 26, 0.12);
+  --accent: #5e2140;
+  --accent-ink: #ffffff;
+  --accent-text: #5e2140;
+  --ready: #5d6b14;
+  --placeholder-ink: rgba(42, 15, 26, 0.28);
+  --tile-1: #e3e3c4;
+  --tile-2: #f0d8d3;
+  --tile-3: #e6dbea;
+  --tile-4: #e2efd1;
+  --tile-5: #fbe7b5;
+  --tile-6: #dfedf3;
+  --how-1: #c4c48b;
+  --how-2: #fddd92;
+  --how-3: #d4c0dc;
+  --how-ink: #2a0f1a;
+  --how-icon: #2a0f1a;
+  --shelf-mix: 45%;
+  --chip: rgba(255, 255, 255, 0.7);
   color-scheme: light;
 }
 
-/* dark: chosen, or following the device. Buttons stay deep plum; plum text lightens to rose. */
-:root[data-theme='dark'] {
-  --bg: #141712;
-  --surface: #20251d;
-  --surface-strong: #2c3327;
-  --ink: #eef0e6;
-  --muted: #a3a996;
-  --rule: rgba(238, 240, 230, 0.12);
-  --accent: #6e2a4b;
-  --accent-ink: #ffffff;
-  --accent-text: #e0b0c5;
-  --ready: #b9d58e;
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root[data-theme='auto'] {
-    --bg: #141712;
-    --surface: #20251d;
-    --surface-strong: #2c3327;
-    --ink: #eef0e6;
-    --muted: #a3a996;
-    --rule: rgba(238, 240, 230, 0.12);
-    --accent: #6e2a4b;
+    --bg: #f6f1e7;
+    --surface: #fffaf1;
+    --surface-strong: #ece4d6;
+    --ink: #2a0f1a;
+    --muted: #7a6366;
+    --rule: rgba(42, 15, 26, 0.12);
+    --accent: #5e2140;
     --accent-ink: #ffffff;
-    --accent-text: #e0b0c5;
-    --ready: #b9d58e;
-    color-scheme: dark;
-  }
+    --accent-text: #5e2140;
+    --ready: #5d6b14;
+    --placeholder-ink: rgba(42, 15, 26, 0.28);
+    --tile-1: #e3e3c4;
+    --tile-2: #f0d8d3;
+    --tile-3: #e6dbea;
+    --tile-4: #e2efd1;
+    --tile-5: #fbe7b5;
+    --tile-6: #dfedf3;
+    --how-1: #c4c48b;
+    --how-2: #fddd92;
+    --how-3: #d4c0dc;
+    --how-ink: #2a0f1a;
+    --how-icon: #2a0f1a;
+    --shelf-mix: 45%;
+    --chip: rgba(255, 255, 255, 0.7);
+    color-scheme: light;
+}
 }
 
 * {
@@ -136,6 +178,7 @@ button {
   font-weight: 400;
   font-style: italic;
   letter-spacing: -0.01em;
+  color: var(--accent-text);
   text-decoration: none;
 }
 
@@ -229,7 +272,7 @@ button {
   font-weight: 500;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--accent-text);
 }
 
 .group {
@@ -549,18 +592,18 @@ input[type='checkbox'] {
   height: 100%;
   padding: 20px;
   border-radius: var(--radius);
-  background: var(--matcha);
-  color: #2b2326;
+  background: var(--how-1);
+  color: var(--how-ink);
   text-decoration: none;
   transition: transform 200ms ease;
 }
 
 .how li:nth-child(2) a {
-  background: var(--butter);
+  background: var(--how-2);
 }
 
 .how li:nth-child(3) a {
-  background: var(--orchid);
+  background: var(--how-3);
 }
 
 .how a:hover {
@@ -569,7 +612,7 @@ input[type='checkbox'] {
 
 .how .icon {
   margin-bottom: 10px;
-  color: #2b2326;
+  color: var(--how-icon);
 }
 
 .how_title {
@@ -582,7 +625,8 @@ input[type='checkbox'] {
 }
 
 .how_text {
-  color: rgba(43, 35, 38, 0.72);
+  color: var(--how-ink);
+  opacity: 0.75;
   font-size: 15px;
 }
 
@@ -619,7 +663,7 @@ input[type='checkbox'] {
 .recipe_image-empty {
   display: grid;
   place-items: center;
-  color: rgba(43, 35, 38, 0.28);
+  color: var(--placeholder-ink);
 }
 
 .card:hover .recipe_image {
@@ -885,14 +929,14 @@ input[type='checkbox'] {
 .shelf {
   padding: 16px 16px 18px;
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--shelf) 45%, var(--surface));
+  background: color-mix(in srgb, var(--shelf) var(--shelf-mix), var(--surface));
 }
 
 .shelf_title {
   display: flex;
   justify-content: space-between;
   margin: 0 2px 12px;
-  color: #2b2326;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.24em;
@@ -900,7 +944,7 @@ input[type='checkbox'] {
 }
 
 .shelf_title span {
-  color: rgba(43, 35, 38, 0.55);
+  color: var(--muted);
   letter-spacing: 0;
 }
 
@@ -920,8 +964,8 @@ input[type='checkbox'] {
   min-height: 34px;
   padding: 0 4px 0 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  color: #2b2326;
+  background: var(--chip);
+  color: var(--ink);
   font-size: 15px;
 }
 
@@ -934,12 +978,12 @@ input[type='checkbox'] {
   border: none;
   border-radius: 50%;
   background: none;
-  color: rgba(43, 35, 38, 0.5);
+  color: var(--muted);
 }
 
 .stock button:hover {
-  background: rgba(43, 35, 38, 0.08);
-  color: #2b2326;
+  background: var(--rule);
+  color: var(--ink);
 }
 
 /* forms and panels */
@@ -1402,57 +1446,5 @@ input[type='checkbox'] {
   .timer-done {
     transition: none;
     animation: none;
-  }
-}
-
-/* placeholders stay quiet in the dark theme */
-:root[data-theme='dark'] .recipe_image-empty {
-  background: var(--surface-strong) !important;
-  color: rgba(255, 255, 255, 0.35);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root[data-theme='auto'] .recipe_image-empty {
-    background: var(--surface-strong) !important;
-    color: rgba(255, 255, 255, 0.35);
-  }
-}
-
-/* shelves in the dark theme: a hint of colour, light text */
-:root[data-theme='dark'] .shelf {
-  background: color-mix(in srgb, var(--shelf) 14%, var(--surface));
-}
-
-:root[data-theme='dark'] .shelf_title,
-:root[data-theme='dark'] .stock li {
-  color: var(--ink);
-}
-
-:root[data-theme='dark'] .shelf_title span,
-:root[data-theme='dark'] .stock button {
-  color: var(--muted);
-}
-
-:root[data-theme='dark'] .stock li {
-  background: rgba(255, 255, 255, 0.07);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root[data-theme='auto'] .shelf {
-    background: color-mix(in srgb, var(--shelf) 14%, var(--surface));
-  }
-
-  :root[data-theme='auto'] .shelf_title,
-  :root[data-theme='auto'] .stock li {
-    color: var(--ink);
-  }
-
-  :root[data-theme='auto'] .shelf_title span,
-  :root[data-theme='auto'] .stock button {
-    color: var(--muted);
-  }
-
-  :root[data-theme='auto'] .stock li {
-    background: rgba(255, 255, 255, 0.07);
   }
 }

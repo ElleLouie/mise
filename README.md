@@ -11,7 +11,7 @@ A recipe box that cooks with you: calm, warm and easy to read from across the ki
 - **Plan:** pick what to cook each day, then add the whole week to groceries in one tap
 - **Groceries:** "To buy", sorted by aisle, and "At home"; bought items move to At home
 - **Find new recipes:** search [TheMealDB](https://www.themealdb.com) by ingredient and save with one tap
-- **Light, dark or automatic** appearance
+- **Themes:** deep plum (default), a cream light theme, or automatic
 - **Installable:** add it to your phone's home screen and it works offline
 - **Backup:** everything is stored in your browser; export and import it as a JSON file
 

@@ -1,8 +1,8 @@
-// Light, dark, or follow the device. The choice is remembered on this device.
+// Deep plum by default, a cream light theme, or follow the device. Remembered on this device.
 export const themes = [
-  { id: 'auto', name: 'Automatic', swatch: ['#eef0e6', '#141712'] },
-  { id: 'light', name: 'Light', swatch: ['#eef0e6', '#5e2140'] },
-  { id: 'dark', name: 'Dark', swatch: ['#141712', '#6e2a4b'] },
+  { id: 'plum', name: 'Plum', swatch: ['#2a0f1a', '#a7b23a'] },
+  { id: 'light', name: 'Light', swatch: ['#f6f1e7', '#5e2140'] },
+  { id: 'auto', name: 'Automatic', swatch: ['#f6f1e7', '#2a0f1a'] },
 ];
 
 const KEY = 'mise-theme';
@@ -10,9 +10,9 @@ const KEY = 'mise-theme';
 export function getTheme() {
   try {
     const saved = localStorage.getItem(KEY);
-    return themes.some((t) => t.id === saved) ? saved : 'auto';
+    return themes.some((t) => t.id === saved) ? saved : 'plum';
   } catch {
-    return 'auto';
+    return 'plum';
   }
 }
 

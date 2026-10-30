@@ -2,9 +2,8 @@ import { Link } from 'react-router-dom';
 import { formatTime } from '../lib/format';
 import Icon from './Icon';
 
-// glaze pastels for recipes without a photo, picked from the recipe's id
-const TINTS = ['#e3e3c4', '#fbe7b5', '#e6dbea', '#dfedf3', '#e2efd1', '#f0d8d3'];
-const tintFor = (id) => TINTS[[...id].reduce((n, c) => n + c.charCodeAt(0), 0) % TINTS.length];
+// a tile colour for recipes without a photo, picked from the recipe's id (colours come from the theme)
+const tintFor = (id) => `var(--tile-${([...id].reduce((n, c) => n + c.charCodeAt(0), 0) % 6) + 1})`;
 
 export function RecipeImage({ recipe, className = '' }) {
   if (recipe.image) return <img src={recipe.image} alt="" className={`recipe_image ${className}`} loading="lazy" />;
