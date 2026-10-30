@@ -5,10 +5,9 @@ function Soon({ title, text }) {
   return (
     <div className="page">
       <div className="panel soon">
-        <p className="label label-accent">Coming soon</p>
         <h1 className="display">{title}</h1>
         <p className="lede">{text}</p>
-        <Link to="/" className="label link">&larr; Back to the recipe box</Link>
+        <Link to="/" className="label link">&larr; Recipes</Link>
       </div>
     </div>
   );

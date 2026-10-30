@@ -2,31 +2,33 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, cookAgain } from '../lib/db';
-import { keyIngredients } from '../lib/ingredients';
-import { formatTime } from '../lib/format';
+import { canMake } from '../lib/suggest';
+import { ingredientName } from '../lib/ingredients';
+import RecipeCard from '../components/RecipeCard';
 
 const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-const DAY = 24 * 60 * 60 * 1000;
-
-// a short reason for each suggestion on today's table
-function reason(recipe, again) {
-  if (!again) return 'Newly added to the box';
-  if (!recipe.lastCookedAt) return 'A favorite you haven’t made yet';
-  const weeks = Math.round((Date.now() - recipe.lastCookedAt) / (7 * DAY));
-  return `A favorite, last made ${weeks <= 1 ? 'a couple of weeks' : `${weeks} weeks`} ago`;
+// Tonight's suggestions: ready to cook, one ingredient away, then favorites due a repeat.
+function tonight(recipes, larder) {
+  const picks = new Map();
+  canMake(recipes, larder).forEach(({ recipe, missing }) => {
+    picks.set(recipe.id, { recipe, why: missing.length === 0 ? 'Ready to cook' : `Need ${ingredientName(missing[0])}` });
+  });
+  cookAgain(recipes).forEach((recipe) => {
+    if (!picks.has(recipe.id)) picks.set(recipe.id, { recipe, why: 'Favorite' });
+  });
+  return [...picks.values()].slice(0, 3);
 }
 
 function Home() {
   const recipes = useLiveQuery(() => db.recipes.orderBy('updatedAt').reverse().toArray(), []);
+  const larder = useLiveQuery(() => db.larder.toArray(), []);
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState(null);
 
-  if (!recipes) return null;
+  if (!recipes || !larder) return null;
 
-  const again = cookAgain(recipes);
-  const table = [...again, ...recipes.filter((r) => !again.includes(r))].slice(0, 3);
-
+  const picks = tonight(recipes, larder);
   const tags = [...new Set(recipes.flatMap((r) => r.tags))].sort();
   const needle = query.trim().toLowerCase();
   const shown = recipes.filter((r) => (!tag || r.tags.includes(tag))
@@ -38,13 +40,13 @@ function Home() {
         <div className="hero_text">
           <p className="label label-accent">{today}</p>
           <h1 className="display">Good ingredients, <em>cooked simply.</em></h1>
-          <p className="lede">Your recipes, what you have in the larder, and a few ideas for tonight.</p>
-
-          <label className="search">
-            <span className="visually_hidden">Search recipes</span>
-            <input type="search" placeholder="Search recipes or ingredients" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </label>
-
+          <div className="toolbar">
+            <label className="search">
+              <span className="visually_hidden">Search recipes</span>
+              <input type="search" placeholder="Search recipes" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </label>
+            <Link to="/new" className="button">+ New recipe</Link>
+          </div>
           {tags.length > 0 && (
             <div className="chips label" role="group" aria-label="Filter by tag">
               <button type="button" className={`chip ${tag === null ? 'chip-on' : ''}`} aria-pressed={tag === null} onClick={() => setTag(null)}>All</button>
@@ -57,55 +59,33 @@ function Home() {
           )}
         </div>
 
-        {table.length > 0 && (
-          <aside className="menu_card">
-            <p className="label label-accent">Today&rsquo;s table</p>
-            <h2 className="menu_card_title">For tonight</h2>
+        <aside className="menu_card">
+          <h2 className="menu_card_title">Tonight</h2>
+          {picks.length > 0 ? (
             <ol>
-              {table.map((recipe, i) => (
+              {picks.map(({ recipe, why }) => (
                 <li key={recipe.id}>
                   <Link to={`/recipe/${recipe.id}`}>
-                    <span className="menu_card_no label">{i + 1}</span>
-                    <span>
-                      <span className="menu_card_dish">{recipe.title}</span>
-                      <span className="menu_card_why">{reason(recipe, again.includes(recipe))}</span>
-                    </span>
+                    <span className="menu_card_dish">{recipe.title}</span>
+                    <span className={why === 'Ready to cook' ? 'pill pill-ready' : 'pill'}>{why}</span>
                   </Link>
                 </li>
               ))}
             </ol>
-          </aside>
-        )}
+          ) : (
+            <p className="empty">Add what you have to see what you can make.</p>
+          )}
+          <Link to="/larder" className="button button-quiet button-full">Update larder</Link>
+        </aside>
       </section>
 
       <section className="box">
-        <div className="section_head">
-          <h2 className="section_title">The recipe box</h2>
-          <Link to="/new" className="label link">+ Add a recipe</Link>
-        </div>
-        {shown.length === 0 && <p className="empty">Nothing matches. Try another word.</p>}
+        <h2 className="section_title">Recipes</h2>
+        {shown.length === 0 && <p className="empty">No matches.</p>}
         <ul className="shelf">
-          {shown.map((recipe) => (
-            <li key={recipe.id}>
-              <Link to={`/recipe/${recipe.id}`} className="jar">
-                <div className="jar_label">
-                  {recipe.tags.length > 0 && (
-                    <div className="jar_row">{recipe.tags.slice(0, 3).map((t) => <span key={t} className="tag">{t}</span>)}</div>
-                  )}
-                  <h3 className="jar_title">{recipe.title}</h3>
-                  <dl className="facts">
-                    <div><dt className="label">Time</dt><dd>{formatTime(recipe.minutes)}</dd></div>
-                    <div><dt className="label">Serves</dt><dd>{recipe.servings}</dd></div>
-                    <div className="facts_wide"><dt className="label">Key</dt><dd>{keyIngredients(recipe.ingredients).join(' · ')}</dd></div>
-                  </dl>
-                </div>
-              </Link>
-            </li>
-          ))}
+          {shown.map((recipe) => <li key={recipe.id}><RecipeCard recipe={recipe} /></li>)}
         </ul>
       </section>
-
-      <p className="footnote"><Link to="/settings" className="label link">Settings &amp; backup</Link></p>
     </div>
   );
 }

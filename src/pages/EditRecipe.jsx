@@ -36,11 +36,10 @@ function Form({ recipe, isNew }) {
   return (
     <div className="page">
       <div className="crumbs">
-        <Link to={isNew ? '/' : `/recipe/${recipe.id}`} className="label link">&larr; Cancel</Link>
+        <Link to={isNew ? '/' : `/recipe/${recipe.id}`} className="label link">&larr; Back</Link>
       </div>
       <form className="panel form" onSubmit={onSubmit}>
-        <p className="label label-accent">{isNew ? 'New recipe' : 'Edit recipe'}</p>
-        <h1 className="display form_title">{form.title || 'Untitled'}</h1>
+        <h1 className="display form_title">{isNew ? 'New recipe' : 'Edit recipe'}</h1>
         <label className="field">
           <span className="label">Name</span>
           <input required value={form.title} onChange={set('title')} placeholder="Lemony white bean pasta" />
@@ -56,22 +55,22 @@ function Form({ recipe, isNew }) {
           </label>
         </div>
         <label className="field">
-          <span className="label">Tags, separated by commas</span>
+          <span className="label">Tags</span>
           <input value={form.tags} onChange={set('tags')} placeholder="quick, weeknight, vegetarian" />
         </label>
         <label className="field">
-          <span className="label">Ingredients, one per line</span>
+          <span className="label">Ingredients <span className="hint">one per line</span></span>
           <textarea rows={8} required value={form.ingredients} onChange={set('ingredients')} placeholder={'200g pasta\n3 tbsp olive oil\n1 lemon'} />
         </label>
         <label className="field">
-          <span className="label">Steps, one per line</span>
+          <span className="label">Steps <span className="hint">one per line</span></span>
           <textarea rows={8} required value={form.steps} onChange={set('steps')} placeholder={'Cook the pasta for 10 minutes.\nWarm the oil…'} />
         </label>
         <label className="field">
-          <span className="label">Original link (optional)</span>
+          <span className="label">Link <span className="hint">optional</span></span>
           <input type="url" value={form.source} onChange={set('source')} placeholder="https://" />
         </label>
-        <button type="submit" className="button button-big">{isNew ? 'Add to the recipe box' : 'Save changes'}</button>
+        <button type="submit" className="button button-big">{isNew ? 'Save recipe' : 'Save changes'}</button>
       </form>
     </div>
   );

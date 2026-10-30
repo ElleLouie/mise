@@ -4,16 +4,18 @@ A recipe box that cooks with you: calm, warm and easy to read from across the ki
 
 ## Features
 
-- **Recipe box:** add, edit and search recipes, filter by tag, and favorite the ones you love
-- **Today's table:** suggestions for tonight, like favorites you haven't made in a while
-- **Servings stepper:** quantities rescale automatically (1½ cups → 3 cups)
-- **Cook mode:** one step at a time in large type, swipe between steps, tap a time in a step ("bake 12 minutes") to start a timer, and the screen stays on
-- **Last time notes:** jot down tweaks and a rating each time you cook something
+- **Recipes:** add, edit, search and tag recipes, mark favorites
+- **Tonight:** suggestions that are ready to cook with what you have, one ingredient away, or favorites due a repeat
+- **Recipe page:** servings stepper that rescales quantities, "Have" marks for what's in your larder, add missing ingredients to your list, notes, and "More like this"
+- **Cook mode:** one step at a time in large type, tap-to-start timers, and the screen stays on
+- **Discover:** find new recipes by ingredient from [TheMealDB](https://www.themealdb.com) and save them with one tap
+- **Larder:** what's in your kitchen, with one-tap staples and "You can make"
+- **List:** shopping list grouped by aisle; checked items move into the larder
 - **Themes:** Stone, Sage, Cobalt and Night (dark)
 - **Installable:** add it to your phone's home screen and it works offline
-- **Backup:** recipes are stored in your browser; export and import them as a JSON file
+- **Backup:** everything is stored in your browser; export and import it as a JSON file
 
-Coming next: the Larder (pantry) and "what can I make", recipe recommendations, importing from a link, a shopping list and the Table (weekly meal plan).
+Coming next: Table (weekly meal plan) and importing recipes from a link.
 
 ## Running locally
 
@@ -25,6 +27,6 @@ npm run dev
 - `npm run build` builds the app into `dist/`
 - `npm run preview` serves the production build
 - `npm run lint` checks the code
-- `npm test` runs the unit tests for ingredient scaling, key ingredients and timers
+- `npm test` runs the unit tests for ingredients, matching, suggestions, aisles, timers and recipe import
 
 Built with React, Vite, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).

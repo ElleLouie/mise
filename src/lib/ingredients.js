@@ -65,3 +65,28 @@ export function keyIngredients(lines, count = 3) {
     .filter((name) => name && !SEASONING.test(name))
     .slice(0, count);
 }
+
+const PREP = new RegExp(`\\b(?:${[
+  'fresh', 'freshly', 'large', 'small', 'medium', 'ripe', 'chopped', 'sliced', 'thinly', 'finely', 'roughly', 'minced',
+  'diced', 'grated', 'softened', 'melted', 'drained', 'rinsed', 'peeled', 'zested', 'juiced', 'cooked', 'cold', 'warm',
+  'to taste', 'for serving', 'optional',
+].join('|')})\\b`, 'gi');
+
+// A plain, comparable name for an ingredient: "2 cloves garlic, thinly sliced" becomes "garlic".
+export function ingredientName(line) {
+  const [base] = keyIngredients([line], 1);
+  if (!base) return '';
+  return base.toLowerCase().replace(PREP, ' ').replace(/\s+/g, ' ').trim();
+}
+
+// "lemons" and "lemon", "tomatoes" and "tomato" count as the same thing
+const singular = (word) => word.replace(/(?:oes|ies|s)$/, (end) => ({ oes: 'o', ies: 'y', s: '' }[end]));
+const words = (name) => name.split(' ').map(singular);
+
+// Does something in the larder cover this ingredient? "white beans" is covered by "white beans" or "beans".
+export function covers(larderName, ingredient) {
+  if (!larderName || !ingredient) return false;
+  const have = words(larderName.toLowerCase());
+  const need = words(ingredient);
+  return have.every((word) => need.includes(word));
+}

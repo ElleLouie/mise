@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveRecipe, deleteRecipe, addNote } from '../lib/db';
-import { scaleIngredient, keyIngredients } from '../lib/ingredients';
+import { db, saveRecipe, deleteRecipe, addNote, addToList } from '../lib/db';
+import { scaleIngredient } from '../lib/ingredients';
+import { missingFor, similar } from '../lib/suggest';
 import { formatTime, formatDate } from '../lib/format';
+import RecipeCard from '../components/RecipeCard';
 import Soon from './Soon';
 
 function hostname(url) {
@@ -16,7 +18,7 @@ function hostname(url) {
 
 function Rating({ value, onChange }) {
   return (
-    <span className="rating" role="radiogroup" aria-label="How did it turn out?">
+    <span className="rating" role="radiogroup" aria-label="Rating">
       {[1, 2, 3, 4, 5].map((n) => (
         <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} of 5`} className={n <= value ? 'rating_on' : ''} onClick={() => onChange(n)}>●</button>
       ))}
@@ -29,7 +31,7 @@ function NoteForm({ recipe }) {
   const [rating, setRating] = useState(0);
   const [open, setOpen] = useState(false);
 
-  if (!open) return <button type="button" className="label link" onClick={() => setOpen(true)}>+ I made this</button>;
+  if (!open) return <button type="button" className="button button-quiet" onClick={() => setOpen(true)}>+ Add a note</button>;
 
   return (
     <form
@@ -43,13 +45,13 @@ function NoteForm({ recipe }) {
       }}
     >
       <label className="field">
-        <span className="label">How did it go? Any tweaks?</span>
-        <textarea rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="More garlic, two minutes less in the oven…" />
+        <span className="visually_hidden">Note</span>
+        <textarea rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="What would you change?" />
       </label>
       <Rating value={rating} onChange={setRating} />
       <div className="form_actions">
-        <button type="button" className="label link" onClick={() => setOpen(false)}>Cancel</button>
-        <button type="submit" className="button">Save note</button>
+        <button type="button" className="button button-quiet" onClick={() => setOpen(false)}>Cancel</button>
+        <button type="submit" className="button">Save</button>
       </div>
     </form>
   );
@@ -59,57 +61,69 @@ function Recipe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const recipe = useLiveQuery(() => db.recipes.get(id), [id], 'loading');
+  const recipes = useLiveQuery(() => db.recipes.toArray(), []);
+  const larder = useLiveQuery(() => db.larder.toArray(), []);
   const [servings, setServings] = useState(null);
   const [checked, setChecked] = useState(() => new Set());
+  const [added, setAdded] = useState(null);
 
   if (recipe === 'loading') return null;
-  if (!recipe) return <Soon title="Not found" text="This recipe isn't in the box anymore." />;
+  if (!recipe) return <Soon title="Not found" text="This recipe was deleted." />;
 
   const portions = servings ?? recipe.servings;
   const factor = portions / recipe.servings;
+  const missing = new Set(larder ? missingFor(recipe, larder) : recipe.ingredients);
   const toggle = (i) => setChecked((prev) => {
     const next = new Set(prev);
     if (next.has(i)) next.delete(i); else next.add(i);
     return next;
   });
+  const addMissing = async () => {
+    const lines = recipe.ingredients.filter((line) => missing.has(line)).map((line) => scaleIngredient(line, factor));
+    const count = await addToList(lines, recipe.title);
+    setAdded(count === 0 ? 'Already on your list' : `Added ${count} to your list`);
+  };
 
   return (
     <div className="page recipe">
       <div className="crumbs">
-        <Link to="/" className="label link">&larr; The recipe box</Link>
-        <div className="crumbs_actions">
-          <button
-            type="button"
-            className="label link"
-            aria-pressed={recipe.favorite}
-            onClick={() => saveRecipe({ ...recipe, favorite: !recipe.favorite })}
-          >
-            {recipe.favorite ? '★ Favorite' : '☆ Favorite'}
-          </button>
-          <Link to={`/recipe/${id}/edit`} className="label link">Edit</Link>
-        </div>
+        <Link to="/" className="label link">&larr; Recipes</Link>
       </div>
 
-      <header className="recipe_head">
-        <div className="recipe_label">
+      <header className="recipe_label">
+        {recipe.image && <img src={recipe.image} alt="" className="recipe_photo" />}
+        <div className="recipe_label_text">
           {recipe.tags.length > 0 && (
             <div className="jar_row">{recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
           )}
           <h1 className="display recipe_title">{recipe.title}</h1>
-          <dl className="facts">
-            <div><dt className="label">Time</dt><dd>{formatTime(recipe.minutes)}</dd></div>
-            <div>
-              <dt className="label">Serves</dt>
-              <dd className="servings">
-                <button type="button" className="step_button" aria-label="Fewer servings" onClick={() => setServings(Math.max(1, portions - 1))}>−</button>
-                <output aria-live="polite">{portions}</output>
-                <button type="button" className="step_button" aria-label="More servings" onClick={() => setServings(portions + 1)}>+</button>
-                {factor !== 1 && <button type="button" className="label link" onClick={() => setServings(null)}>Reset</button>}
-              </dd>
-            </div>
-            <div className="facts_wide"><dt className="label">Key</dt><dd>{keyIngredients(recipe.ingredients).join(' · ')}</dd></div>
-          </dl>
-          <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button button-big">Start cooking</Link>
+          <div className="recipe_meta">
+            <span>{formatTime(recipe.minutes)}</span>
+            <span className="servings">
+              <button type="button" className="step_button" aria-label="Fewer servings" onClick={() => setServings(Math.max(1, portions - 1))}>−</button>
+              <output aria-live="polite">Serves {portions}</output>
+              <button type="button" className="step_button" aria-label="More servings" onClick={() => setServings(portions + 1)}>+</button>
+            </span>
+          </div>
+          <div className="actions">
+            <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button button-primary">Start cooking</Link>
+            {missing.size > 0 && (
+              <button type="button" className="button button-quiet" onClick={addMissing}>
+                Add {missing.size} missing to list
+              </button>
+            )}
+            <Link to={`/recipe/${id}/edit`} className="button button-quiet">Edit</Link>
+            <button
+              type="button"
+              className="button button-quiet button-icon"
+              aria-pressed={recipe.favorite}
+              aria-label={recipe.favorite ? 'Remove from favorites' : 'Add to favorites'}
+              onClick={() => saveRecipe({ ...recipe, favorite: !recipe.favorite })}
+            >
+              {recipe.favorite ? '★' : '☆'}
+            </button>
+          </div>
+          {added && <p className="small" role="status">{added} · <Link to="/list" className="link">View list</Link></p>}
         </div>
       </header>
 
@@ -122,6 +136,7 @@ function Recipe() {
                 <label className={checked.has(i) ? 'checked' : ''}>
                   <input type="checkbox" checked={checked.has(i)} onChange={() => toggle(i)} />
                   <span>{scaleIngredient(line, factor)}</span>
+                  {!missing.has(line) && <span className="have">Have</span>}
                 </label>
               </li>
             ))}
@@ -134,20 +149,19 @@ function Recipe() {
             {recipe.steps.map((step, i) => <li key={`${i}-${step}`}>{step}</li>)}
           </ol>
           {recipe.source && (
-            <p className="source label">
-              From <a href={recipe.source} target="_blank" rel="noreferrer">{hostname(recipe.source)}</a>
+            <p className="source small">
+              Source: <a href={recipe.source} target="_blank" rel="noreferrer">{hostname(recipe.source)}</a>
             </p>
           )}
         </section>
       </div>
 
       <section className="notes">
-        <h2 className="section_title">Last time</h2>
-        {recipe.notes.length === 0 && <p className="empty">No notes yet. After you cook it, jot down what you&apos;d change.</p>}
+        <h2 className="section_title">Notes</h2>
         <ul>
           {recipe.notes.map((note) => (
             <li key={note.id} className="note">
-              <span className="label">
+              <span className="small">
                 {formatDate(note.date)}
                 {note.rating > 0 && <span className="note_rating" aria-label={`${note.rating} of 5`}> {'●'.repeat(note.rating)}{'○'.repeat(5 - note.rating)}</span>}
               </span>
@@ -158,11 +172,20 @@ function Recipe() {
         <NoteForm recipe={recipe} />
       </section>
 
+      {recipes && similar(recipe, recipes).length > 0 && (
+        <section className="related">
+          <h2 className="section_title">More like this</h2>
+          <ul className="shelf shelf-compact">
+            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} compact /></li>)}
+          </ul>
+        </section>
+      )}
+
       <button
         type="button"
         className="label link link-danger"
         onClick={async () => {
-          if (window.confirm(`Delete "${recipe.title}"? This can't be undone.`)) {
+          if (window.confirm(`Delete "${recipe.title}"?`)) {
             await deleteRecipe(id);
             navigate('/');
           }

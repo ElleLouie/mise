@@ -32,7 +32,7 @@ function Settings() {
   return (
     <div className="page">
       <div className="crumbs">
-        <Link to="/" className="label link">&larr; The recipe box</Link>
+        <Link to="/" className="label link">&larr; Recipes</Link>
       </div>
       <div className="panel">
         <h1 className="display form_title">Settings</h1>
@@ -60,10 +60,10 @@ function Settings() {
         </div>
 
         <h2 className="section_label label">Backup</h2>
-        <p className="small">Recipes are saved in this browser on this device. Download a backup now and then, or to move your recipes to another device.</p>
+        <p className="small">Saved on this device only.</p>
         <div className="form_actions form_actions-left">
-          <button type="button" className="button" onClick={download}>Download backup</button>
-          <button type="button" className="button button-quiet" onClick={() => fileInput.current.click()}>Import backup</button>
+          <button type="button" className="button" onClick={download}>Download</button>
+          <button type="button" className="button button-quiet" onClick={() => fileInput.current.click()}>Import</button>
           <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={upload} />
         </div>
         {message && <p className="small" role="status">{message}</p>}

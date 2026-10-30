@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIngredient, formatQuantity, scaleIngredient, keyIngredients } from './ingredients.js';
+import {
+  parseIngredient, formatQuantity, scaleIngredient, keyIngredients, ingredientName, covers,
+} from './ingredients.js';
+import { missingFor, canMake, similar } from './suggest.js';
+import { aisleFor } from './aisles.js';
+import { toRecipe } from './mealdb.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -58,4 +63,68 @@ test('picks key ingredients by name', () => {
     ['short pasta', 'white beans', 'olive oil'],
   );
   assert.deepEqual(keyIngredients(['2 cloves garlic', '1 cup of rice'], 2), ['garlic', 'rice']);
+});
+
+test('names ingredients plainly', () => {
+  assert.equal(ingredientName('2 cloves garlic, thinly sliced'), 'garlic');
+  assert.equal(ingredientName('1 can (400g) white beans, drained'), 'white beans');
+  assert.equal(ingredientName('3 cups cooked rice, cold'), 'rice');
+  assert.equal(ingredientName('2 tbsp butter, softened'), 'butter');
+  assert.equal(ingredientName('½ cup grated parmesan'), 'parmesan');
+});
+
+test('matches larder items to ingredients', () => {
+  assert.ok(covers('lemons', 'lemon'));
+  assert.ok(covers('beans', 'white beans'));
+  assert.ok(covers('Tomato', 'tomatoes'));
+  assert.ok(!covers('white beans', 'beans'));
+  assert.ok(!covers('butter', 'peanut'));
+});
+
+test('finds missing ingredients and what you can make', () => {
+  const recipe = { id: 'a', tags: ['quick'], ingredients: ['2 salmon fillets', '1 lemon', 'Salt and pepper'] };
+  const larder = [{ name: 'salmon' }];
+  assert.deepEqual(missingFor(recipe, larder), ['1 lemon']);
+  assert.equal(canMake([recipe], larder).length, 1);
+  assert.equal(canMake([recipe], [], 1).length, 0);
+  assert.equal(canMake([recipe], [{ name: 'salmon' }, { name: 'lemons' }])[0].missing.length, 0);
+});
+
+test('finds similar recipes', () => {
+  const a = { id: 'a', tags: ['quick'], ingredients: ['1 lemon', '2 tbsp butter'] };
+  const b = { id: 'b', tags: ['quick'], ingredients: ['1 lemon', 'pasta'] };
+  const c = { id: 'c', tags: ['baking'], ingredients: ['flour'] };
+  assert.deepEqual(similar(a, [a, b, c]).map((r) => r.id), ['b']);
+});
+
+test('sorts items into aisles', () => {
+  assert.equal(aisleFor('limes'), 'Produce');
+  assert.equal(aisleFor('salmon fillets'), 'Meat & fish');
+  assert.equal(aisleFor('parmesan'), 'Dairy & eggs');
+  assert.equal(aisleFor('white miso'), 'Pantry');
+  assert.equal(aisleFor('paper towels'), 'Other');
+});
+
+test('turns a TheMealDB meal into a recipe', () => {
+  const meal = {
+    idMeal: '52772',
+    strMeal: 'Teriyaki Chicken Casserole',
+    strCategory: 'Chicken',
+    strArea: 'Japanese',
+    strTags: 'Meat,Casserole',
+    strMealThumb: 'https://example.com/photo.jpg',
+    strSource: '',
+    strInstructions: 'Preheat oven to 350.\r\nSTEP 2 - Combine soy sauce and honey.\r\n\r\n3. Bake for 30 minutes.',
+    strIngredient1: 'soy sauce', strMeasure1: '3/4 cup',
+    strIngredient2: 'chicken breasts', strMeasure2: '2',
+    strIngredient3: '', strMeasure3: ' ',
+  };
+  const recipe = toRecipe(meal);
+  assert.equal(recipe.title, 'Teriyaki Chicken Casserole');
+  assert.deepEqual(recipe.ingredients, ['3/4 cup soy sauce', '2 chicken breasts']);
+  assert.deepEqual(recipe.tags, ['chicken', 'japanese', 'meat', 'casserole']);
+  assert.equal(recipe.steps.length, 3);
+  assert.equal(recipe.steps[1], 'Combine soy sauce and honey.');
+  assert.equal(recipe.steps[2], 'Bake for 30 minutes.');
+  assert.equal(recipe.source, 'https://www.themealdb.com/meal/52772');
 });
