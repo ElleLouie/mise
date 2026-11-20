@@ -59,39 +59,43 @@ function Menu({ party, recipes, dishes }) {
         return (
           <section key={course.id} className="course">
             <h2 className="group_title">{course.name}</h2>
-            {here.length > 0 && (
-              <ul className="rows">
-                {here.map((dish) => (
-                  <li key={dish.recipeId} className="row dish">
-                    <RecipeImage recipe={dish.recipe} className="dish_image" />
-                    <Link to={`/recipe/${dish.recipeId}`} className="row_link">
-                      {dish.recipe.title}
-                      <span className="row_sub">{formatTime(dish.recipe.minutes)} · makes {dish.recipe.servings}</span>
-                    </Link>
-                    <button
-                      type="button"
-                      className="icon_button"
-                      aria-label={`Remove ${dish.recipe.title}`}
-                      onClick={() => update(party.dishes.filter((d) => !(d.recipeId === dish.recipeId && d.course === course.id)))}
-                    >
-                      <Icon name="close" size={16} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {picking === course.id ? (
-              <Picker
-                recipes={recipes.filter((r) => !party.dishes.some((d) => d.recipeId === r.id))}
-                onClose={() => setPicking(null)}
-                onPick={async (recipeId) => {
-                  await update([...party.dishes, { recipeId, course: course.id }]);
-                  setPicking(null);
-                }}
-              />
-            ) : (
-              <button type="button" className="day_add" onClick={() => setPicking(course.id)}>+ Add {course.id === 'dessert' ? 'dessert' : course.name.toLowerCase().replace(/s$/, '')}</button>
-            )}
+            {/* each course is one card: its dishes, then a row to add another */}
+            <ul className="rows">
+              {here.map((dish) => (
+                <li key={dish.recipeId} className="row dish">
+                  <RecipeImage recipe={dish.recipe} className="dish_image" />
+                  <Link to={`/recipe/${dish.recipeId}`} className="row_link">
+                    {dish.recipe.title}
+                    <span className="row_sub">{formatTime(dish.recipe.minutes)} · makes {dish.recipe.servings}</span>
+                  </Link>
+                  <button
+                    type="button"
+                    className="icon_button"
+                    aria-label={`Remove ${dish.recipe.title}`}
+                    onClick={() => update(party.dishes.filter((d) => !(d.recipeId === dish.recipeId && d.course === course.id)))}
+                  >
+                    <Icon name="close" size={16} />
+                  </button>
+                </li>
+              ))}
+              <li className="row row-add">
+                {picking === course.id ? (
+                  <Picker
+                    recipes={recipes.filter((r) => !party.dishes.some((d) => d.recipeId === r.id))}
+                    onClose={() => setPicking(null)}
+                    onPick={async (recipeId) => {
+                      await update([...party.dishes, { recipeId, course: course.id }]);
+                      setPicking(null);
+                    }}
+                  />
+                ) : (
+                  <button type="button" className="add_button" onClick={() => setPicking(course.id)}>
+                    <span className="add_icon"><Icon name="plus" size={16} /></span>
+                    Add {course.id === 'dessert' ? 'a dessert' : `a ${course.name.toLowerCase().replace(/s$/, '')}`}
+                  </button>
+                )}
+              </li>
+            </ul>
           </section>
         );
       })}

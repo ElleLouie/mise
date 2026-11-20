@@ -5,6 +5,8 @@
   --bg: #f4ead6;
   --card: #fffaf0;
   --card-line: rgba(51, 38, 29, 0.12);
+  --line: rgba(51, 38, 29, 0.22);
+  --hover: #ebe2cf;
   --shadow: 0 1px 0 rgba(51, 38, 29, 0.06), 0 6px 18px -8px rgba(51, 38, 29, 0.18);
   --surface: #d5e5ee;
   --surface-strong: #bcd5e3;
@@ -57,6 +59,8 @@
   --surface: #3a1625;
   --card: #3a1625;
   --card-line: rgba(244, 234, 217, 0.08);
+  --line: rgba(244, 234, 217, 0.2);
+  --hover: #4b1d31;
   --shadow: none;
   --china: #c3cc5a;
   --gingham: rgba(244, 234, 217, 0.05);
@@ -415,13 +419,15 @@ button {
   cursor: default;
 }
 
+/* secondary actions: an outlined card, the same everywhere */
 .button-quiet {
-  background: var(--surface);
+  background: var(--card);
   color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .button-quiet:hover {
-  background: var(--surface-strong);
+  background: var(--hover);
   filter: none;
 }
 
@@ -455,7 +461,7 @@ button {
 }
 
 .icon_button:hover {
-  background: var(--surface);
+  background: var(--hover);
   color: var(--ink);
 }
 
@@ -477,17 +483,17 @@ textarea {
   width: 100%;
   min-height: 44px;
   padding: 10px 14px;
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: var(--radius-small);
-  background: var(--surface);
+  background: var(--card);
   font-size: var(--text-body);
   outline: none;
 }
 
 input:focus,
 textarea:focus {
-  border-color: var(--accent-text);
-  background: var(--bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 textarea {
@@ -507,8 +513,9 @@ input[type='checkbox'] {
   align-items: center;
   gap: 8px;
   padding-left: 12px;
+  border: 1px solid var(--line);
   border-radius: var(--radius-small);
-  background: var(--surface);
+  background: var(--card);
   color: var(--muted);
 }
 
@@ -519,7 +526,12 @@ input[type='checkbox'] {
 }
 
 .search:focus-within {
-  box-shadow: 0 0 0 2px var(--accent-text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.search input:focus {
+  box-shadow: none;
 }
 
 .toolbar,
@@ -546,47 +558,52 @@ input[type='checkbox'] {
   padding: 0 14px;
   border: none;
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--card);
+  box-shadow: inset 0 0 0 1px var(--line);
   font-size: var(--text-subhead);
   font-weight: 500;
   text-transform: capitalize;
 }
 
 .chip:hover {
-  background: var(--surface-strong);
+  background: var(--hover);
 }
 
 .chip[aria-pressed='true'],
 .chip-on {
   background: var(--ink);
   color: var(--bg);
+  box-shadow: none;
 }
 
+/* tabs: plain labels on a rule, the open one underlined */
 .segmented {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: 2px;
   margin-top: 20px;
-  padding: 3px;
-  border-radius: var(--radius-small);
-  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
 
 .segmented button {
-  min-height: 36px;
+  min-height: 44px;
+  margin-bottom: -1px;
   border: none;
-  border-radius: 8px;
+  border-bottom: 2px solid transparent;
   background: none;
-  font-size: var(--text-subhead);
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--muted);
 }
 
-.segmented [aria-selected='true'] {
-  background: var(--bg);
+.segmented button:hover {
   color: var(--ink);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.segmented [aria-selected='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .pill {
@@ -757,13 +774,14 @@ input[type='checkbox'] {
   height: 30px;
   border: none;
   border-radius: 50%;
-  background: var(--surface);
+  background: var(--card);
+  box-shadow: inset 0 0 0 1px var(--line);
   font-size: 18px;
   line-height: 1;
 }
 
 .step_button:hover {
-  background: var(--surface-strong);
+  background: var(--hover);
 }
 
 .actions {
@@ -1008,15 +1026,16 @@ input[type='checkbox'] {
   display: grid;
   gap: 8px;
   padding: 10px;
-  border: 2px solid transparent;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
   font-weight: 500;
   text-align: center;
 }
 
 .theme-on {
-  border-color: var(--accent-text);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .theme_swatch {
@@ -1032,7 +1051,41 @@ input[type='checkbox'] {
 }
 
 .picker {
-  margin-top: 8px;
+  flex: 1;
+  padding: 12px 0;
+}
+
+/* the last row of a course: add another dish */
+.row-add {
+  min-height: 56px;
+}
+
+.add_button {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent-text);
+  font-weight: 500;
+  text-align: left;
+}
+
+.add_icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: var(--radius-small);
+}
+
+.add_button:hover .add_icon {
+  border-style: solid;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .picker .toolbar {
@@ -1647,9 +1700,9 @@ input[type='checkbox'] {
   display: grid;
   gap: 8px;
   padding: 8px 8px 10px;
-  border: 2px solid transparent;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
   text-align: center;
 }
 
@@ -1660,7 +1713,8 @@ input[type='checkbox'] {
 }
 
 .mood-on {
-  border-color: var(--accent-text);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 /* phones */
