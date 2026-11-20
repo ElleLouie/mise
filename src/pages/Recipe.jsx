@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveRecipe, saveParty, deleteRecipe, addNote } from '../lib/db';
+import { db, saveParty, deleteRecipe } from '../lib/db';
 import { scaleIngredient } from '../lib/ingredients';
-import { similar } from '../lib/suggest';
 import { courseFor, isUpcoming } from '../lib/party';
-import { formatTime, formatDate } from '../lib/format';
-import RecipeCard from '../components/RecipeCard';
+import { formatTime } from '../lib/format';
 import Icon from '../components/Icon';
 import Soon from './Soon';
 
@@ -18,52 +16,10 @@ function hostname(url) {
   }
 }
 
-function Rating({ value, onChange }) {
-  return (
-    <span className="rating" role="radiogroup" aria-label="Rating">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} of 5`} className={n <= value ? 'rating_on' : ''} onClick={() => onChange(n)}>●</button>
-      ))}
-    </span>
-  );
-}
-
-function NoteForm({ recipe }) {
-  const [text, setText] = useState('');
-  const [rating, setRating] = useState(0);
-  const [open, setOpen] = useState(false);
-
-  if (!open) return <button type="button" className="button button-quiet" onClick={() => setOpen(true)}>+ Add a note</button>;
-
-  return (
-    <form
-      className="note_form"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        await addNote(recipe, { text: text.trim(), rating });
-        setText('');
-        setRating(0);
-        setOpen(false);
-      }}
-    >
-      <label className="field">
-        <span className="visually_hidden">Note</span>
-        <textarea rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="What would you change?" />
-      </label>
-      <Rating value={rating} onChange={setRating} />
-      <div className="form_actions">
-        <button type="button" className="button button-quiet" onClick={() => setOpen(false)}>Cancel</button>
-        <button type="submit" className="button">Save</button>
-      </div>
-    </form>
-  );
-}
-
 function Recipe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const recipe = useLiveQuery(() => db.recipes.get(id), [id], 'loading');
-  const recipes = useLiveQuery(() => db.recipes.toArray(), []);
   const parties = useLiveQuery(() => db.parties.orderBy('date').toArray(), []);
   const [servings, setServings] = useState(null);
   const [checked, setChecked] = useState(() => new Set());
@@ -97,13 +53,11 @@ function Recipe() {
             <output aria-live="polite">{portions}</output>
             <button type="button" className="step_button" aria-label="More servings" onClick={() => setServings(portions + 1)}>+</button>
           </span>
-          {recipe.tags.map((t) => <span key={t} className="tag">{t}</span>)}
         </div>
 
         <div className="actions">
-          <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button"><Icon name="play" size={18} />Start cooking</Link>
           {upcoming.length > 0 && (
-            <label className="button button-quiet select_button">
+            <label className="button select_button">
               <Icon name="calendar" size={18} />
               <span>Add to a party</span>
               <select
@@ -122,15 +76,6 @@ function Recipe() {
               </select>
             </label>
           )}
-          <button
-            type="button"
-            className="button button-quiet button-icon"
-            aria-pressed={recipe.favorite}
-            aria-label={recipe.favorite ? 'Remove from favorites' : 'Add to favorites'}
-            onClick={() => saveRecipe({ ...recipe, favorite: !recipe.favorite })}
-          >
-            <Icon name="star" size={18} filled={recipe.favorite} />
-          </button>
           <Link to={`/recipe/${id}/edit`} className="button button-quiet button-icon" aria-label="Edit recipe"><Icon name="edit" size={18} /></Link>
         </div>
         {added && (
@@ -167,31 +112,6 @@ function Recipe() {
           )}
         </section>
       </div>
-
-      <section className="section notes">
-        <h2 className="section_title">Notes</h2>
-        <ul>
-          {recipe.notes.map((note) => (
-            <li key={note.id} className="note">
-              <span className="small">
-                {formatDate(note.date)}
-                {note.rating > 0 && <span className="note_rating" aria-label={`${note.rating} of 5`}> {'●'.repeat(note.rating)}{'○'.repeat(5 - note.rating)}</span>}
-              </span>
-              {note.text && <p>{note.text}</p>}
-            </li>
-          ))}
-        </ul>
-        <NoteForm recipe={recipe} />
-      </section>
-
-      {recipes && similar(recipe, recipes).length > 0 && (
-        <section className="section">
-          <h2 className="section_title">More like this</h2>
-          <ul className="grid grid-row">
-            {similar(recipe, recipes).map((other) => <li key={other.id}><RecipeCard recipe={other} /></li>)}
-          </ul>
-        </section>
-      )}
 
       <button
         type="button"

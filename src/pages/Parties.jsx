@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import {
-  isUpcoming, partyTime, menuDishes, shoppingList, timeline, clockLabel,
+  isUpcoming, partyTime, menuDishes, partyShopping, seatsFor, timeline, clockLabel,
 } from '../lib/party';
 import { ideas } from '../lib/ideas';
 import Icon from '../components/Icon';
@@ -22,13 +22,13 @@ export function DateTile({ party, big = false }) {
 
 const when = (party) => {
   const date = partyTime(party.date, party.time);
-  return `${date.toLocaleDateString('en-US', { weekday: 'long' })} · ${clockLabel(date, party.date)} · ${party.guests} guests`;
+  return `${date.toLocaleDateString('en-US', { weekday: 'long' })} · ${clockLabel(date, party.date)} · ${seatsFor(party)} guests`;
 };
 
 // The next party, with what's left to do
 function NextParty({ party, recipes }) {
   const dishes = menuDishes(party, recipes);
-  const toBuy = shoppingList(dishes).filter((item) => !party.bought.includes(item.key)).length;
+  const toBuy = partyShopping(party, dishes).filter((item) => !party.bought.includes(item.key) && !(party.have ?? []).includes(item.key)).length;
   const start = dishes.length ? clockLabel(timeline(party, dishes)[0].at, party.date) : null;
   const stats = [
     { value: dishes.length, label: dishes.length === 1 ? 'dish' : 'dishes', tab: 'menu' },

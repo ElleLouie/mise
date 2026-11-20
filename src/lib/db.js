@@ -76,13 +76,6 @@ export async function deleteRecipe(id) {
   await db.recipes.delete(id);
 }
 
-// "Last time" notes; saving one also marks the recipe as cooked today.
-export async function addNote(recipe, { text, rating }) {
-  const date = Date.now();
-  const note = { id: newId(), date, text, rating };
-  await saveRecipe({ ...recipe, notes: [note, ...recipe.notes], lastCookedAt: date });
-}
-
 // Dinner parties: when, how many, the menu (recipes by course), the table mood and what's been bought.
 export function blankParty() {
   const now = Date.now();

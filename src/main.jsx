@@ -5,10 +5,8 @@ import '@fontsource-variable/fraunces/full.css';
 import '@fontsource-variable/fraunces/full-italic.css';
 import '@fontsource-variable/figtree';
 import './styles.css';
-import { showTheme, getTheme } from './lib/theme';
 import App from './App';
 
-showTheme(getTheme());
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

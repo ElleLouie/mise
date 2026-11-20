@@ -3,6 +3,8 @@ import {
   parseIngredient, formatQuantity, scaleIngredient, ingredientName, sameName, UNITS,
 } from './ingredients.js';
 import { findTimers } from './timers.js';
+import { aisleFor } from './aisles.js';
+import { decorFor } from './moods.js';
 
 // when each course reaches the table, in minutes after sitting down
 export const COURSES = [
@@ -30,6 +32,9 @@ export function partyTime(date, time) {
   return new Date(y, m - 1, d, h, min);
 }
 
+// Guests: the number you set, or more if you've named more people than that
+export const seatsFor = (party) => Math.max(party.guests, party.names?.length ?? 0);
+
 // The menu's recipes, with how much to scale each one for the guests.
 export function menuDishes(party, recipes) {
   const byId = new Map(recipes.map((recipe) => [recipe.id, recipe]));
@@ -37,7 +42,7 @@ export function menuDishes(party, recipes) {
     .filter((dish) => byId.has(dish.recipeId))
     .map((dish) => {
       const recipe = byId.get(dish.recipeId);
-      return { ...dish, recipe, factor: party.guests / recipe.servings };
+      return { ...dish, recipe, factor: seatsFor(party) / recipe.servings };
     });
 }
 
@@ -59,6 +64,22 @@ export function shoppingList(dishes) {
     });
   });
   return [...items.values()].map((item) => ({ ...item, text: combine(item.lines, item.name) }));
+}
+
+// Everything to get for the party, each with an aisle: the menu's ingredients, simple menu items
+// ("Baguette"), things you added yourself ("Wine") and what goes on the table.
+export function partyShopping(party, dishes) {
+  const items = shoppingList(dishes).map((item) => ({ ...item, aisle: aisleFor(item.name) }));
+  party.dishes.filter((dish) => dish.text).forEach((dish) => {
+    items.push({ key: `menu:${dish.text.toLowerCase()}`, text: dish.text, aisle: aisleFor(dish.text), dishes: [] });
+  });
+  (party.extras ?? []).forEach((extra) => {
+    items.push({ key: `extra:${extra.id}`, text: extra.text, aisle: aisleFor(extra.text), extra: extra.id, dishes: [] });
+  });
+  decorFor(party.mood, seatsFor(party)).forEach((text, i) => {
+    items.push({ key: `table:${party.mood}:${i}`, text, aisle: 'For the table', dishes: [] });
+  });
+  return items;
 }
 
 const unitOf = (rest) => sameName(rest.replace(/,.*$/, ''));

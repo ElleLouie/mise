@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import {
   parseIngredient, formatQuantity, scaleIngredient, keyIngredients, ingredientName, covers,
 } from './ingredients.js';
-import { similar } from './suggest.js';
 import { aisleFor } from './aisles.js';
-import { toRecipe } from './mealdb.js';
-import { shoppingList, stepMinutes, timeline, courseFor, menuDishes } from './party.js';
+import {
+  shoppingList, stepMinutes, timeline, courseFor, menuDishes, partyShopping, seatsFor,
+} from './party.js';
 import { ideas } from './ideas.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
@@ -83,43 +83,12 @@ test('matches larder items to ingredients', () => {
   assert.ok(!covers('butter', 'peanut'));
 });
 
-test('finds similar recipes', () => {
-  const a = { id: 'a', tags: ['quick'], ingredients: ['1 lemon', '2 tbsp butter'] };
-  const b = { id: 'b', tags: ['quick'], ingredients: ['1 lemon', 'pasta'] };
-  const c = { id: 'c', tags: ['baking'], ingredients: ['flour'] };
-  assert.deepEqual(similar(a, [a, b, c]).map((r) => r.id), ['b']);
-});
-
 test('sorts items into aisles', () => {
   assert.equal(aisleFor('limes'), 'Produce');
   assert.equal(aisleFor('salmon fillets'), 'Meat & fish');
   assert.equal(aisleFor('parmesan'), 'Dairy & eggs');
   assert.equal(aisleFor('white miso'), 'Pantry');
   assert.equal(aisleFor('paper towels'), 'Other');
-});
-
-test('turns a TheMealDB meal into a recipe', () => {
-  const meal = {
-    idMeal: '52772',
-    strMeal: 'Teriyaki Chicken Casserole',
-    strCategory: 'Chicken',
-    strArea: 'Japanese',
-    strTags: 'Meat,Casserole',
-    strMealThumb: 'https://example.com/photo.jpg',
-    strSource: '',
-    strInstructions: 'Preheat oven to 350.\r\nSTEP 2 - Combine soy sauce and honey.\r\n\r\n3. Bake for 30 minutes.',
-    strIngredient1: 'soy sauce', strMeasure1: '3/4 cup',
-    strIngredient2: 'chicken breasts', strMeasure2: '2',
-    strIngredient3: '', strMeasure3: ' ',
-  };
-  const recipe = toRecipe(meal);
-  assert.equal(recipe.title, 'Teriyaki Chicken Casserole');
-  assert.deepEqual(recipe.ingredients, ['3/4 cup soy sauce', '2 chicken breasts']);
-  assert.deepEqual(recipe.tags, ['chicken', 'japanese', 'meat', 'casserole']);
-  assert.equal(recipe.steps.length, 3);
-  assert.equal(recipe.steps[1], 'Combine soy sauce and honey.');
-  assert.equal(recipe.steps[2], 'Bake for 30 minutes.');
-  assert.equal(recipe.source, 'https://www.themealdb.com/meal/52772');
 });
 
 const chicken = {
@@ -197,4 +166,17 @@ test('every dinner idea builds a list and a timeline', () => {
     // nothing starts before 9 in the morning
     assert.ok(events[0].at.getHours() >= 9, `${idea.id} starts at ${events[0].at}`);
   });
+});
+
+test('counts named guests as seats', () => {
+  assert.equal(seatsFor({ guests: 6 }), 6);
+  assert.equal(seatsFor({ guests: 2, names: ['A', 'B', 'C'] }), 3);
+});
+
+test('puts simple items, extras and the table on the list', () => {
+  const dinner = { ...party, mood: 'gingham', dishes: [...party.dishes, { text: 'Baguette', course: 'starter' }], extras: [{ id: 'x', text: 'Wine' }] };
+  const items = partyShopping(dinner, menuDishes(dinner, [chicken, salad]));
+  assert.ok(items.some((item) => item.text === 'Baguette' && item.aisle === 'Bakery'));
+  assert.ok(items.some((item) => item.text === 'Wine' && item.extra === 'x'));
+  assert.ok(items.some((item) => item.aisle === 'For the table' && item.text === '8 butter yellow napkins'));
 });

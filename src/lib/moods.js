@@ -54,46 +54,37 @@ export const moods = [
 
 export const moodFor = (id) => moods.find((mood) => mood.id === id) ?? moods[0];
 
-// What to put on the table for each style, and a few words to start the vibe
+// What to put on the table for each style
 const DECOR = {
   gingham: {
     cloth: 'Blue gingham tablecloth', napkins: 'butter yellow napkins', flowers: 'small bunches of daisies',
     candles: 'white taper candles', extra: 'Jam jars for the flowers',
-    words: ['golden hour', 'porch supper', 'bare feet', 'lemonade'],
   },
   ice: {
     cloth: 'Cream linen tablecloth', napkins: 'orange napkins', flowers: 'bunches of orange ranunculus',
     candles: 'white taper candles', extra: 'Pale blue chargers',
-    words: ['bright', 'breezy', 'seaside', 'spritz'],
   },
   candlelight: {
     cloth: 'Oxblood tablecloth', napkins: 'olive linen napkins', flowers: 'bunches of dark red roses',
     candles: 'cream taper candles', extra: 'Brass candlesticks',
-    words: ['moody', 'slow dinner', 'red wine', 'late night'],
   },
   garden: {
     cloth: 'White linen tablecloth', napkins: 'sage napkins', flowers: 'bunches of garden roses',
     candles: 'white pillar candles', extra: 'Bud vases',
-    words: ['soft', 'garden party', 'afternoon light', 'rosé'],
   },
   citrus: {
     cloth: 'Cream tablecloth', napkins: 'cobalt napkins', flowers: 'bunches of yellow tulips',
     candles: 'white taper candles', extra: 'A bowl of lemons',
-    words: ['sunny', 'Amalfi', 'long lunch', 'limoncello'],
   },
   plum: {
     cloth: 'Plum tablecloth', napkins: 'olive napkins', flowers: 'bunches of raspberry dahlias',
     candles: 'cream taper candles', extra: 'Brass candlesticks',
-    words: ['rich', 'velvet', 'supper club', 'jazz'],
   },
   linen: {
     cloth: 'Oatmeal linen tablecloth', napkins: 'rust napkins', flowers: 'bunches of dried grasses',
     candles: 'beeswax candles', extra: 'Stoneware plates',
-    words: ['earthy', 'unhurried', 'harvest', 'natural wine'],
   },
 };
-
-export const vibeWords = (id) => DECOR[id]?.words ?? [];
 
 // "6 butter yellow napkins", "3 white taper candles"… scaled to the guests
 export function decorFor(id, guests) {

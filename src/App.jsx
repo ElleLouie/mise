@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import Parties from './pages/Parties';
 import Party from './pages/Party';
 import PartyForm from './pages/PartyForm';
@@ -7,10 +7,8 @@ import Ideas from './pages/Ideas';
 import Idea from './pages/Idea';
 import Recipe from './pages/Recipe';
 import EditRecipe from './pages/EditRecipe';
-import Cook from './pages/Cook';
 import Settings from './pages/Settings';
 import Soon from './pages/Soon';
-import Discover from './pages/Discover';
 import Icon from './components/Icon';
 
 const tabs = [
@@ -21,8 +19,6 @@ const tabs = [
 
 // A sidebar on wide screens, a tab bar along the bottom on phones.
 function Navigation() {
-  // cook mode takes over the whole screen
-  if (useLocation().pathname.endsWith('/cook')) return null;
   return (
     <aside className="sidebar">
       <Link to="/" className="wordmark">mise</Link>
@@ -59,9 +55,7 @@ function App() {
             <Route path="/recipes/new" element={<EditRecipe />} />
             <Route path="/recipe/:id" element={<Recipe />} />
             <Route path="/recipe/:id/edit" element={<EditRecipe />} />
-            <Route path="/recipe/:id/cook" element={<Cook />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/discover" element={<Discover />} />
             {/* pages from the first version */}
             <Route path="/new" element={<Navigate to="/recipes/new" replace />} />
             {['/plan', '/table', '/groceries', '/shopping', '/list', '/pantry', '/larder'].map((path) => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}

@@ -2,10 +2,8 @@ import { useRef, useState } from 'react';
 import Icon from '../components/Icon';
 import { Link } from 'react-router-dom';
 import { exportRecipes, importRecipes } from '../lib/db';
-import { themes, getTheme, applyTheme } from '../lib/theme';
 
 function Settings() {
-  const [theme, setTheme] = useState(getTheme);
   const [message, setMessage] = useState('');
   const fileInput = useRef(null);
 
@@ -36,30 +34,8 @@ function Settings() {
       <div className="panel">
         <h1 className="page_title">Settings</h1>
 
-        <h2 className="group_title">Theme</h2>
-        <div className="themes" role="radiogroup" aria-label="Color theme">
-          {themes.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="radio"
-              aria-checked={theme === t.id}
-              className={`theme ${theme === t.id ? 'theme-on' : ''}`}
-              onClick={() => {
-                applyTheme(t.id);
-                setTheme(t.id);
-              }}
-            >
-              <span className="theme_swatch" aria-hidden="true">
-                {t.swatch.map((c) => <i key={c} style={{ background: c }} />)}
-              </span>
-              <span className="label">{t.name}</span>
-            </button>
-          ))}
-        </div>
-
-        <h2 className="group_title">Backup</h2>
-        <p className="small">Saved on this device only.</p>
+        <h2 className="section_title settings_title">Backup</h2>
+        <p className="small">Your parties and recipes are saved on this device only. Download a copy to keep them safe.</p>
         <div className="form_actions form_actions-left">
           <button type="button" className="button" onClick={download}>Download</button>
           <button type="button" className="button button-quiet" onClick={() => fileInput.current.click()}>Import</button>
