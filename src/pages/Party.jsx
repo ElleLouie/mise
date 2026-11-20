@@ -67,10 +67,13 @@ function Picker({ recipes, onPick, onText, onClose }) {
   );
 }
 
-function Menu({ party, recipes, dishes }) {
+function Menu({ party, recipes, dishes, removed }) {
   const [picking, setPicking] = useState(null);
   const update = (next) => saveParty({ ...party, dishes: next });
-  const remove = (entry) => update(party.dishes.filter((d) => d !== entry));
+  const remove = (entry, title) => {
+    removed(title);
+    update(party.dishes.filter((d) => d !== entry));
+  };
 
   return (
     <div className="courses">
@@ -103,7 +106,7 @@ function Menu({ party, recipes, dishes }) {
                         </span>
                       </>
                     )}
-                    <button type="button" className="icon_button" aria-label={`Remove ${dish?.recipe.title ?? entry.text}`} onClick={() => remove(entry)}>
+                    <button type="button" className="icon_button" aria-label={`Remove ${dish?.recipe.title ?? entry.text}`} onClick={() => remove(entry, dish?.recipe.title ?? entry.text)}>
                       <Icon name="close" size={16} />
                     </button>
                   </li>
@@ -162,7 +165,7 @@ function AddLine({ label, placeholder, onAdd }) {
 }
 
 // One list for the party: the menu's ingredients, simple items, your own extras and what goes on the table.
-function Shopping({ party, dishes }) {
+function Shopping({ party, dishes, removed }) {
   const items = partyShopping(party, dishes);
   const bought = new Set(party.bought);
   const have = new Set(party.have ?? []);
@@ -186,7 +189,7 @@ function Shopping({ party, dishes }) {
       </label>
       <button type="button" className="text_button" onClick={() => save({ have: toggle(have, item.key) })}>Have it</button>
       {item.extra && (
-        <button type="button" className="icon_button" aria-label={`Remove ${item.text}`} onClick={() => save({ extras: party.extras.filter((x) => x.id !== item.extra) })}>
+        <button type="button" className="icon_button" aria-label={`Remove ${item.text}`} onClick={() => { removed(item.text); save({ extras: party.extras.filter((x) => x.id !== item.extra) }); }}>
           <Icon name="close" size={16} />
         </button>
       )}
@@ -219,6 +222,24 @@ function Shopping({ party, dishes }) {
       <p className="small">Salt, pepper and water are left off.</p>
     </>
   );
+}
+
+// A few seconds to take back the last removal
+function useUndo() {
+  const [last, setLast] = useState(null);
+  useEffect(() => {
+    if (!last) return undefined;
+    const clear = setTimeout(() => setLast(null), 6000);
+    return () => clearTimeout(clear);
+  }, [last]);
+  return {
+    last,
+    offer: (label, before) => setLast({ label, before }),
+    take: (restore) => {
+      restore(last.before);
+      setLast(null);
+    },
+  };
 }
 
 const toClock = (date) => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -364,7 +385,7 @@ function Timeline({ party, dishes }) {
 }
 
 // The table: see it in 3D, pick its style, and name the guests for the place cards.
-function Table({ party }) {
+function Table({ party, removed }) {
   const mood = moodFor(party.mood);
   const names = party.names ?? [];
   const seats = seatsFor(party);
@@ -409,7 +430,7 @@ function Table({ party }) {
               {names.map((name, i) => (
                 <li key={`${i}-${name}`} className="row">
                   <span className="row_text">{name}</span>
-                  <button type="button" className="icon_button" aria-label={`Remove ${name}`} onClick={() => save({ names: names.filter((_, j) => j !== i) })}>
+                  <button type="button" className="icon_button" aria-label={`Remove ${name}`} onClick={() => { removed(name); save({ names: names.filter((_, j) => j !== i) }); }}>
                     <Icon name="close" size={16} />
                   </button>
                 </li>
@@ -427,6 +448,7 @@ function Party() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
   const party = useLiveQuery(() => db.parties.get(id), [id], 'loading');
+  const undo = useUndo();
   const recipes = useLiveQuery(() => db.recipes.orderBy('title').toArray(), []);
 
   if (party === 'loading' || !recipes) return null;
@@ -434,6 +456,8 @@ function Party() {
 
   const tab = TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'menu';
   const dishes = menuDishes(party, recipes);
+  // remember the party as it was, so a removal can be taken back
+  const removed = (label) => undo.offer(label, party);
 
   return (
     <div className={tab === 'table' ? 'page' : 'page narrow'}>
@@ -458,11 +482,17 @@ function Party() {
       </div>
 
       <div className="tab_body">
-        {tab === 'menu' && <Menu party={party} recipes={recipes} dishes={dishes} />}
-        {tab === 'shop' && <Shopping party={party} dishes={dishes} />}
+        {tab === 'menu' && <Menu party={party} recipes={recipes} dishes={dishes} removed={removed} />}
+        {tab === 'shop' && <Shopping party={party} dishes={dishes} removed={removed} />}
         {tab === 'timeline' && <Timeline party={party} dishes={dishes} />}
-        {tab === 'table' && <Table party={party} />}
+        {tab === 'table' && <Table party={party} removed={removed} />}
       </div>
+      {undo.last && (
+        <div className="toast" role="status">
+          <span>Removed {undo.last.label}</span>
+          <button type="button" className="toast_action" onClick={() => undo.take(saveParty)}>Undo</button>
+        </div>
+      )}
     </div>
   );
 }
