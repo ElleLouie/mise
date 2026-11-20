@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client';
 import '@fontsource-variable/inter-tight';
 import '@fontsource-variable/newsreader';
 import './styles.css';
-import { applyTheme, getTheme } from './lib/theme';
+import { showTheme, getTheme } from './lib/theme';
 import App from './App';
 
-applyTheme(getTheme());
+showTheme(getTheme());
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

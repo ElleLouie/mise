@@ -5,7 +5,8 @@ export const themes = [
   { id: 'auto', name: 'Automatic', swatch: ['#f7f2e8', '#2a0f1a'] },
 ];
 
-const KEY = 'mise-theme';
+// v1 saved its plum default on every visit, so v2 keeps choices under a new key
+const KEY = 'mise-theme-v2';
 
 export function getTheme() {
   try {
@@ -16,8 +17,13 @@ export function getTheme() {
   }
 }
 
-export function applyTheme(id) {
+export function showTheme(id) {
   document.documentElement.dataset.theme = id;
+}
+
+// only a choice made in Settings is remembered
+export function applyTheme(id) {
+  showTheme(id);
   try {
     localStorage.setItem(KEY, id);
   } catch {
