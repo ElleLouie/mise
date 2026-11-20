@@ -1,6 +1,6 @@
 // Cream, ice blue and orange by default, deep plum for dark, or follow the device. Remembered on this device.
 export const themes = [
-  { id: 'cream', name: 'Cream', swatch: ['#f7f2e8', '#e7f0f4', '#e8692c'] },
+  { id: 'cream', name: 'Cream', swatch: ['#f7f2e8', '#cfe5f2', '#e8692c'] },
   { id: 'plum', name: 'Plum', swatch: ['#2a0f1a', '#a7b23a'] },
   { id: 'auto', name: 'Automatic', swatch: ['#f7f2e8', '#2a0f1a'] },
 ];

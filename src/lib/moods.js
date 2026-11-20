@@ -4,8 +4,8 @@ export const moods = [
     id: 'ice',
     wood: '#b59a7c',
     name: 'Ice & orange',
-    cloth: '#f4eee2', plate: '#ffffff', charger: '#a6c9da', napkin: '#e8692c', flowers: ['#f08a4b', '#f6c39a', '#fffaf2'],
-    leaves: '#6f8a6a', metal: '#cfd5da', candle: '#fffaf2', glass: '#e4f0f6', backdrop: '#f7f2e8',
+    cloth: '#f4eee2', plate: '#ffffff', charger: '#8fc0dc', napkin: '#e8692c', flowers: ['#f08a4b', '#f6c39a', '#fffaf2'],
+    leaves: '#6f8a6a', metal: '#cfd5da', candle: '#fffaf2', glass: '#d6eaf5', backdrop: '#f7f2e8',
   },
   {
     id: 'candlelight',

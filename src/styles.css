@@ -3,27 +3,27 @@
 :root {
   /* cream, ice blue and orange */
   --bg: #f7f2e8;
-  --surface: #e7f0f4;
-  --surface-strong: #d3e3ea;
+  --surface: #cfe5f2;
+  --surface-strong: #b3d6ea;
   --ink: #1d2a33;
-  --muted: #5a6870;
+  --muted: #4f5d66;
   --rule: rgba(29, 42, 51, 0.12);
   --accent: #e8692c;
   --accent-ink: #1d2a33;
-  --accent-text: #b8481a;
+  --accent-text: #a3401a;
   --ready: #2f7486;
   --placeholder-ink: rgba(29, 42, 51, 0.3);
-  --tile-1: #d3e3ea;
+  --tile-1: #b3d6ea;
   --tile-2: #f6d5c0;
-  --tile-3: #bfd8e3;
+  --tile-3: #9fcbe3;
   --tile-4: #fbe3cf;
-  --tile-5: #c9dde6;
+  --tile-5: #c2e0f0;
   --tile-6: #f3e8d6;
-  --how-1: #d3e3ea;
+  --how-1: #b3d6ea;
   --how-2: #f6d5c0;
-  --how-3: #e7f0f4;
+  --how-3: #cfe5f2;
   --how-ink: #1d2a33;
-  --how-icon: #b8481a;
+  --how-icon: #a3401a;
   --shelf-mix: 45%;
   --chip: rgba(255, 255, 255, 0.7);
   color-scheme: light;
