@@ -1,8 +1,8 @@
-// Deep plum by default, a cream light theme, or follow the device. Remembered on this device.
+// Cream, ice blue and orange by default, deep plum for dark, or follow the device. Remembered on this device.
 export const themes = [
+  { id: 'cream', name: 'Cream', swatch: ['#f7f2e8', '#e7f0f4', '#e8692c'] },
   { id: 'plum', name: 'Plum', swatch: ['#2a0f1a', '#a7b23a'] },
-  { id: 'light', name: 'Light', swatch: ['#f6f1e7', '#5e2140'] },
-  { id: 'auto', name: 'Automatic', swatch: ['#f6f1e7', '#2a0f1a'] },
+  { id: 'auto', name: 'Automatic', swatch: ['#f7f2e8', '#2a0f1a'] },
 ];
 
 const KEY = 'mise-theme';
@@ -10,9 +10,9 @@ const KEY = 'mise-theme';
 export function getTheme() {
   try {
     const saved = localStorage.getItem(KEY);
-    return themes.some((t) => t.id === saved) ? saved : 'plum';
+    return themes.some((t) => t.id === saved) ? saved : 'cream';
   } catch {
-    return 'plum';
+    return 'cream';
   }
 }
 

@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'mise',
         short_name: 'mise',
         description: 'Dinner parties, planned: a menu, one shopping list, a cooking timeline and the table',
-        theme_color: '#2a0f1a',
-        background_color: '#2a0f1a',
+        theme_color: '#f7f2e8',
+        background_color: '#f7f2e8',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
