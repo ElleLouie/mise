@@ -6,7 +6,7 @@ import {
   COURSES, menuDishes, shoppingList, timeline, clockLabel, partyDateLabel, partyTime,
 } from '../lib/party';
 import { aisleFor, aisleOrder } from '../lib/aisles';
-import { moods, moodFor } from '../lib/moods';
+import { moods, moodFor, vibeWords, decorFor } from '../lib/moods';
 import { formatTime } from '../lib/format';
 import { RecipeImage } from '../components/RecipeCard';
 import Icon from '../components/Icon';
@@ -175,33 +175,137 @@ function Timeline({ party, dishes }) {
   );
 }
 
+// Saved on blur, so typing stays smooth
+function NoteField({ label, value, placeholder, onSave }) {
+  return (
+    <label className="field">
+      <span className="label">{label}</span>
+      <input defaultValue={value} placeholder={placeholder} onBlur={(e) => e.target.value !== value && onSave(e.target.value.trim())} />
+    </label>
+  );
+}
+
+function AddLine({ label, placeholder, onAdd }) {
+  const [text, setText] = useState('');
+  return (
+    <form
+      className="add_row"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (text.trim()) onAdd(text.trim());
+        setText('');
+      }}
+    >
+      <label className="field_inline">
+        <span className="visually_hidden">{label}</span>
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder={placeholder} />
+      </label>
+      <button type="submit" className="button button-quiet" disabled={!text.trim()}>Add</button>
+    </form>
+  );
+}
+
+// The table: see it in 3D, set the vibe, name the guests and gather what goes on it.
 function Table({ party }) {
   const mood = moodFor(party.mood);
+  const names = party.names ?? [];
+  const vibe = { words: [], dress: '', music: '', ...party.vibe };
+  const done = new Set(party.decorDone ?? []);
+  const seats = Math.max(party.guests, names.length);
+  const save = (changes) => saveParty({ ...party, ...changes });
+  const setVibe = (changes) => save({ vibe: { ...vibe, ...changes } });
+  const toggleWord = (word) => setVibe({ words: vibe.words.includes(word) ? vibe.words.filter((w) => w !== word) : [...vibe.words, word] });
+  const words = [...new Set([...vibe.words, ...vibeWords(mood.id)])];
+  const decor = decorFor(mood.id, seats);
+
   return (
     <>
       <div className="table_frame">
         <Suspense fallback={<div className="table_scene" />}>
-          <TableScene mood={mood} guests={Math.min(party.guests, 14)} />
+          <TableScene mood={mood} guests={Math.min(seats, 14)} names={names} />
         </Suspense>
       </div>
-      <div className="moods" role="radiogroup" aria-label="Table mood">
-        {moods.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            role="radio"
-            aria-checked={m.id === mood.id}
-            className={`mood ${m.id === mood.id ? 'mood-on' : ''}`}
-            onClick={() => saveParty({ ...party, mood: m.id })}
-          >
-            <span className="party_swatch" aria-hidden="true">
-              {[m.check ?? m.cloth, m.napkin, m.flowers[0], m.plate].map((color, i) => <i key={`${i}-${color}`} style={{ background: color }} />)}
-            </span>
-            <span className="label">{m.name}</span>
-          </button>
-        ))}
-      </div>
       <p className="small">Drag to look around.</p>
+
+      <div className="table_tools">
+        <section className="tool">
+          <h2 className="section_title">Vibe</h2>
+          <div className="moods" role="radiogroup" aria-label="Table style">
+            {moods.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={m.id === mood.id}
+                className={`mood ${m.id === mood.id ? 'mood-on' : ''}`}
+                onClick={() => save({ mood: m.id })}
+              >
+                <span className="party_swatch" aria-hidden="true">
+                  {[m.check ?? m.cloth, m.napkin, m.flowers[0], m.plate].map((color, i) => <i key={`${i}-${color}`} style={{ background: color }} />)}
+                </span>
+                <span className="mood_name">{m.name}</span>
+              </button>
+            ))}
+          </div>
+          <div className="chips" role="group" aria-label="Vibe words">
+            {words.map((word) => (
+              <button key={word} type="button" className="chip chip-word" aria-pressed={vibe.words.includes(word)} onClick={() => toggleWord(word)}>
+                {word}
+              </button>
+            ))}
+          </div>
+          <AddLine label="Add a word" placeholder="Add your own word" onAdd={(word) => !vibe.words.includes(word) && setVibe({ words: [...vibe.words, word] })} />
+          <NoteField key={`dress-${party.id}`} label="Dress code" value={vibe.dress} placeholder="Linen and sandals" onSave={(dress) => setVibe({ dress })} />
+          <NoteField key={`music-${party.id}`} label="Music" value={vibe.music} placeholder="Old soul records, then jazz" onSave={(music) => setVibe({ music })} />
+        </section>
+
+        <div className="tool_column">
+          <section className="tool">
+            <h2 className="section_title">Guests</h2>
+            <p className="small">{seats} seats · {names.length} named</p>
+            {names.length > 0 && (
+              <ul className="rows">
+                {names.map((name, i) => (
+                  <li key={`${i}-${name}`} className="row">
+                    <span className="row_text">{name}</span>
+                    <button
+                      type="button"
+                      className="icon_button"
+                      aria-label={`Remove ${name}`}
+                      onClick={() => save({ names: names.filter((_, j) => j !== i) })}
+                    >
+                      <Icon name="close" size={16} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <AddLine
+              label="Add a guest"
+              placeholder="Add a guest"
+              onAdd={(name) => save({ names: [...names, name], guests: Math.max(party.guests, names.length + 1) })}
+            />
+          </section>
+
+          <section className="tool">
+            <h2 className="section_title">For the table</h2>
+            <ul className="rows">
+              {decor.map((item) => (
+                <li key={item} className={done.has(item) ? 'row row-done' : 'row'}>
+                  <label className="row_check">
+                    <input
+                      type="checkbox"
+                      checked={done.has(item)}
+                      onChange={() => save({ decorDone: done.has(item) ? [...done].filter((d) => d !== item) : [...done, item] })}
+                    />
+                    <span>{item}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
     </>
   );
 }

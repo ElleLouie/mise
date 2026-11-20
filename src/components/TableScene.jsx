@@ -39,6 +39,29 @@ function gingham(base, check) {
   return texture;
 }
 
+// a folded place card with a guest's name on it
+function nameCard(name, ink) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fffaf0';
+  ctx.fillRect(0, 0, 512, 256);
+  ctx.fillStyle = ink;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  let size = 104;
+  do {
+    ctx.font = `italic 650 ${size}px 'Fraunces Variable', Georgia, serif`;
+    size -= 6;
+  } while (ctx.measureText(name).width > 440 && size > 40);
+  ctx.fillText(name, 256, 132);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  return texture;
+}
+
 const lathe = (points, segments = 48) => new THREE.LatheGeometry(points.map(([x, y]) => new THREE.Vector2(x, y)), segments);
 
 const PLATE = lathe([[0, 0.002], [0.09, 0.002], [0.1, 0.005], [0.126, 0.015], [0.13, 0.014], [0.104, 0], [0, 0]]);
@@ -47,7 +70,7 @@ const TUMBLER = lathe([[0, 0], [0.03, 0], [0.033, 0.09]]);
 const STICK = lathe([[0, 0], [0.034, 0], [0.034, 0.008], [0.012, 0.02], [0.009, 0.1], [0.017, 0.11], [0.017, 0.12], [0, 0.12]]);
 const VASE = lathe([[0, 0], [0.032, 0], [0.042, 0.04], [0.036, 0.1], [0.018, 0.14], [0.022, 0.15]]);
 
-function build(mood, guests) {
+function build(mood, guests, names) {
   const table = new THREE.Group();
   const rand = seeded(guests * 97 + mood.id.length * 13);
   const mat = (color, options = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.6, ...options });
@@ -98,11 +121,27 @@ function build(mood, guests) {
     seats.push({ x, side });
   }
 
-  seats.forEach(({ x, side }) => {
+  seats.forEach(({ x, side }, seat) => {
     const place = new THREE.Group();
     place.position.set(x, TOP + 0.01, side * (DEPTH / 2 - 0.2));
     place.rotation.y = side === 1 ? 0 : Math.PI;
     table.add(place);
+    if (names[seat]) {
+      // a tent card behind the plate, with the name on both sides
+      const label = new THREE.MeshStandardMaterial({ map: nameCard(names[seat], '#33261d'), roughness: 0.9 });
+      const tent = new THREE.Group();
+      tent.position.set(-0.06, 0, -0.215);
+      [0, Math.PI].forEach((turn) => {
+        const face = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.07), label);
+        face.rotation.set(0, turn, 0);
+        face.rotateX(-0.32);
+        face.translateY(0.034);
+        face.translateZ(0.011);
+        face.castShadow = true;
+        tent.add(face);
+      });
+      place.add(tent);
+    }
     add(new THREE.CylinderGeometry(0.155, 0.155, 0.008, 48), charger, 0, 0.004, 0, place);
     add(PLATE, plate, 0, 0.008, 0, place);
     // a napkin folded into a long band across the plate
@@ -172,7 +211,7 @@ function build(mood, guests) {
   return { table, length, lights };
 }
 
-function TableScene({ mood, guests }) {
+function TableScene({ mood, guests, names = [] }) {
   const container = useRef(null);
   const view = useRef(null);
 
@@ -248,7 +287,7 @@ function TableScene({ mood, guests }) {
   // the table itself, rebuilt when the mood or guest count changes
   useEffect(() => {
     const { scene, camera, controls, floor, sky } = view.current;
-    const { table, length, lights } = build(mood, guests);
+    const { table, length, lights } = build(mood, guests, names);
     const glow = lights.slice(0, 3).map((x) => {
       const light = new THREE.PointLight('#ffb870', mood.id === 'candlelight' || mood.id === 'plum' ? 0.5 : 0.2, 1.6, 2);
       light.position.set(x, TOP + 0.38, 0);
@@ -276,7 +315,8 @@ function TableScene({ mood, guests }) {
         object.material.dispose();
       });
     };
-  }, [mood, guests]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mood, guests, names.join('|')]);
 
   return <div ref={container} className="table_scene" role="img" aria-label={`A table for ${guests}, set in ${mood.name.toLowerCase()} colours`} />;
 }

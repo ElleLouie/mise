@@ -1312,6 +1312,11 @@ input[type='checkbox'] {
   line-height: 1.3;
 }
 
+.party_head {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
 .page_head .recipe_meta {
   margin-top: 10px;
 }
@@ -1691,9 +1696,8 @@ input[type='checkbox'] {
 
 .moods {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
 }
 
 .mood {
@@ -1704,6 +1708,43 @@ input[type='checkbox'] {
   border-radius: var(--radius);
   background: var(--card);
   text-align: center;
+}
+
+.mood_name {
+  font-size: var(--text-caption);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* tools under the table: vibe, guests and decor */
+.table_tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 28px;
+}
+
+.tool_column {
+  display: grid;
+  align-content: start;
+  gap: 28px;
+}
+
+.tool .section_title {
+  margin-bottom: 12px;
+}
+
+.tool .small {
+  margin: -6px 0 10px;
+}
+
+.tool .rows + .add_row,
+.tool .chips + .add_row {
+  margin-top: 12px;
+}
+
+.chip-word {
+  text-transform: none;
 }
 
 .mood .party_swatch {
@@ -1812,7 +1853,11 @@ input[type='checkbox'] {
   }
 
   .moods {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .table_tools {
+    grid-template-columns: 1fr;
   }
 
   .table_scene {
