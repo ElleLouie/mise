@@ -105,6 +105,23 @@ export const saveParty = (party) => db.parties.put({ ...party, updatedAt: Date.n
 
 export const deleteParty = (id) => db.parties.delete(id);
 
+// Plan a dinner idea: its recipes join your box (unless you already have them by name) and go on the menu.
+export async function partyFromIdea(party, idea, titles) {
+  const dishes = [];
+  await db.transaction('rw', db.recipes, db.parties, async () => {
+    const existing = await db.recipes.toArray();
+    for (const { course, recipe } of idea.dishes.filter((dish) => titles.includes(dish.recipe.title))) {
+      let saved = existing.find((other) => other.title.toLowerCase() === recipe.title.toLowerCase());
+      if (!saved) {
+        saved = { ...blankRecipe(), ...recipe };
+        await db.recipes.add(saved);
+      }
+      dishes.push({ recipeId: saved.id, course });
+    }
+    await saveParty({ ...party, mood: idea.mood, dishes });
+  });
+}
+
 // Backups: everything as one JSON file, and back again.
 export async function exportRecipes() {
   const [recipes, parties] = await Promise.all([db.recipes.toArray(), db.parties.toArray()]);

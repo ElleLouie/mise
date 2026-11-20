@@ -96,7 +96,8 @@ function Menu({ party, recipes, dishes }) {
         );
       })}
       <p className="small">
-        Need more ideas? <Link to="/discover" className="link">Find new recipes</Link>
+        {dishes.length === 0 ? 'Not sure where to start? ' : 'Need more? '}
+        <Link to="/ideas" className="link">Browse dinner ideas</Link> or <Link to="/discover" className="link">find new recipes</Link>
       </p>
     </div>
   );

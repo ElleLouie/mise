@@ -3,6 +3,8 @@ import Parties from './pages/Parties';
 import Party from './pages/Party';
 import PartyForm from './pages/PartyForm';
 import Recipes from './pages/Recipes';
+import Ideas from './pages/Ideas';
+import Idea from './pages/Idea';
 import Recipe from './pages/Recipe';
 import EditRecipe from './pages/EditRecipe';
 import Cook from './pages/Cook';
@@ -13,6 +15,7 @@ import Icon from './components/Icon';
 
 const tabs = [
   { to: '/', label: 'Parties', icon: 'table' },
+  { to: '/ideas', label: 'Ideas', icon: 'spark' },
   { to: '/recipes', label: 'Recipes', icon: 'book' },
 ];
 
@@ -50,6 +53,8 @@ function App() {
             <Route path="/party/new" element={<PartyForm />} />
             <Route path="/party/:id" element={<Party />} />
             <Route path="/party/:id/edit" element={<PartyForm />} />
+            <Route path="/ideas" element={<Ideas />} />
+            <Route path="/ideas/:id" element={<Idea />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/recipes/new" element={<EditRecipe />} />
             <Route path="/recipe/:id" element={<Recipe />} />

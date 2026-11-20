@@ -4,6 +4,7 @@ A small dinner party planner. Pick a menu, and mise builds the shopping list, a 
 
 ## Features
 
+- **Ideas:** six themed dinners (Backyard BBQ, Japanese night, Sunday roast, Italian trattoria, Taco night, Mediterranean mezze) with a full menu; plan one in a tap
 - **Parties:** a date, a dinner time and a guest count
 - **Menu:** starters, mains, sides and dessert, picked from your recipes
 - **Shopping:** one list for the whole menu, scaled for your guests, combined and sorted by aisle
@@ -24,4 +25,4 @@ npm run dev
 - `npm run lint` checks the code
 - `npm test` runs the unit tests for ingredients, the shopping list, the timeline, aisles, timers and recipe import
 
-Built with React, Vite, three.js, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).
+Built with React, Vite, Inter, three.js, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).

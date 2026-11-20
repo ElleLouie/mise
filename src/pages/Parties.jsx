@@ -4,13 +4,9 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
 import { moodFor } from '../lib/moods';
 import { partyDateLabel, isUpcoming } from '../lib/party';
+import { ideas } from '../lib/ideas';
 import Icon from '../components/Icon';
-
-const STEPS = [
-  { icon: 'book', title: 'Pick a menu', text: 'Starters to dessert, from your recipes.' },
-  { icon: 'bag', title: 'Shop once', text: 'One list, scaled for your guests.' },
-  { icon: 'clock', title: 'Cook on time', text: 'A timeline that ends at dinner.' },
-];
+import { IdeaCard } from './Ideas';
 
 function PartyCard({ party }) {
   const mood = moodFor(party.mood);
@@ -42,20 +38,6 @@ function Parties() {
         <Link to="/party/new" className="button"><Icon name="plus" size={18} />New party</Link>
       </header>
 
-      {parties.length === 0 && (
-        <ol className="how" aria-label="How it works">
-          {STEPS.map(({ icon, title, text }) => (
-            <li key={title}>
-              <Link to="/party/new">
-                <Icon name={icon} size={22} />
-                <span className="how_title">{title}</span>
-                <span className="how_text">{text}</span>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      )}
-
       {upcoming.length > 0 && (
         <section className="section">
           <h2 className="section_title">Coming up</h2>
@@ -64,6 +46,20 @@ function Parties() {
           </ul>
         </section>
       )}
+
+      {parties.length === 0 && (
+        <p className="lede">Plan a dinner: pick a menu, and mise builds the shopping list, a cooking timeline and the table.</p>
+      )}
+
+      <section className="section">
+        <div className="section_head">
+          <h2 className="section_title">Dinner ideas</h2>
+          <Link to="/ideas" className="link">See all</Link>
+        </div>
+        <ul className="party_grid grid-row-scroll">
+          {ideas.slice(0, 3).map((idea) => <li key={idea.id}><IdeaCard idea={idea} /></li>)}
+        </ul>
+      </section>
 
       {past.length > 0 && (
         <section className="section">

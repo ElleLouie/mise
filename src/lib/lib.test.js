@@ -7,6 +7,7 @@ import { similar } from './suggest.js';
 import { aisleFor } from './aisles.js';
 import { toRecipe } from './mealdb.js';
 import { shoppingList, stepMinutes, timeline, courseFor, menuDishes } from './party.js';
+import { ideas } from './ideas.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -183,4 +184,17 @@ test('guesses the course from tags', () => {
   assert.equal(courseFor({ tags: ['Dessert'] }), 'dessert');
   assert.equal(courseFor({ tags: ['side'] }), 'side');
   assert.equal(courseFor({ tags: [] }), 'main');
+});
+
+test('every dinner idea builds a list and a timeline', () => {
+  ideas.forEach((idea) => {
+    const recipes = idea.dishes.map(({ recipe }, i) => ({ ...recipe, id: `${idea.id}-${i}` }));
+    const dinner = { date: '2026-12-05', time: '19:30', guests: 6, dishes: idea.dishes.map(({ course }, i) => ({ recipeId: `${idea.id}-${i}`, course })) };
+    const dishes = menuDishes(dinner, recipes);
+    assert.ok(shoppingList(dishes).length > 5, idea.id);
+    const events = timeline(dinner, dishes);
+    assert.ok(events.every((e) => !Number.isNaN(e.at.getTime())), idea.id);
+    // nothing starts before 9 in the morning
+    assert.ok(events[0].at.getHours() >= 9, `${idea.id} starts at ${events[0].at}`);
+  });
 });
