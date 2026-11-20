@@ -5,7 +5,7 @@ import {
 } from './ingredients.js';
 import { aisleFor } from './aisles.js';
 import {
-  shoppingList, stepMinutes, timeline, courseFor, menuDishes, partyShopping, seatsFor,
+  shoppingList, stepMinutes, timeline, courseFor, menuDishes, partyShopping, seatsFor, ovenClashes, nowAndNext,
 } from './party.js';
 import { ideas } from './ideas.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
@@ -179,4 +179,33 @@ test('puts simple items, extras and the table on the list', () => {
   assert.ok(items.some((item) => item.text === 'Baguette' && item.aisle === 'Bakery'));
   assert.ok(items.some((item) => item.text === 'Wine' && item.extra === 'x'));
   assert.ok(items.some((item) => item.aisle === 'For the table' && item.text === '8 butter yellow napkins'));
+});
+
+test('moves courses when you change serving times', () => {
+  const dinner = { ...party, serve: { main: 0 } };
+  const events = timeline(dinner, menuDishes(dinner, [chicken, salad]));
+  const rest = events.find((e) => e.text === 'Rest for 15 minutes.').at;
+  assert.equal(rest.getHours() * 60 + rest.getMinutes(), 19 * 60 + 15);
+  assert.ok(events.some((e) => e.text === 'Serve the mains'));
+});
+
+test('flags two dishes needing the oven at different temperatures', () => {
+  const roast = { ...chicken, steps: ['Heat the oven to 425°F.', 'Roast for 1 hour.', 'Rest for 15 minutes.'] };
+  const cake = {
+    id: 'k', title: 'Cake', servings: 8, minutes: 60, tags: ['main'], ingredients: [], steps: ['Heat the oven to 350°F.', 'Bake for 40 minutes.'],
+  };
+  const dinner = { ...party, dishes: [{ recipeId: 'c', course: 'main' }, { recipeId: 'k', course: 'main' }] };
+  const clashes = ovenClashes(timeline(dinner, menuDishes(dinner, [roast, cake])));
+  assert.equal(clashes.length, 1);
+  assert.deepEqual([clashes[0].a.temperature, clashes[0].b.temperature].sort(), ['350', '425']);
+});
+
+test('knows what to do now and next', () => {
+  const events = timeline(party, menuDishes(party, [chicken, salad]));
+  const at = (h, m) => new Date(2026, 11, 5, h, m).getTime();
+  const { current, next } = nowAndNext(events, new Set(), at(19, 0));
+  assert.equal(current[0].text, 'Roast for 1 hour.');
+  assert.equal(next.text, 'Rest for 15 minutes.');
+  const later = nowAndNext(events, new Set([current[0].key]), at(19, 0));
+  assert.equal(later.current.length, 0);
 });

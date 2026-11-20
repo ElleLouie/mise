@@ -22,8 +22,9 @@ export function beep() {
 }
 
 // keep the screen on while cooking
-export function useWakeLock() {
+export function useWakeLock(active = true) {
   useEffect(() => {
+    if (!active) return undefined;
     let lock = null;
     const request = async () => {
       try {
@@ -39,7 +40,7 @@ export function useWakeLock() {
       document.removeEventListener('visibilitychange', onVisible);
       lock?.release();
     };
-  }, []);
+  }, [active]);
 }
 
 export function useTimers() {

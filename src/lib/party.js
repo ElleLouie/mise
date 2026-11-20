@@ -137,12 +137,24 @@ export function stepMinutes(recipe) {
 const makeAhead = (recipe, course) => course === 'dessert' || recipe.tags.some((tag) => /make.?ahead/i.test(tag));
 const ARRIVE = 30;
 
+// When each course goes out, in minutes after sitting down. Sides go out with the mains.
+export function serveOffset(party, course) {
+  const id = course === 'side' ? 'main' : course;
+  return party.serve?.[id] ?? courseOf(id).offset;
+}
+
+// The courses on the menu that have their own serving time: from its recipes and simple items
+export function servedCourses(party, dishes) {
+  const courses = [...dishes, ...party.dishes.filter((dish) => dish.text)].map((dish) => (dish.course === 'side' ? 'main' : dish.course));
+  return ['starter', 'main', 'dessert'].filter((id) => courses.includes(id));
+}
+
 // Every step of every dish on one clock, ending as each course is served.
 export function timeline(party, dishes) {
   const sitDown = partyTime(party.date, party.time);
   const events = [];
   dishes.forEach(({ recipe, course }) => {
-    const serve = new Date(sitDown.getTime() + courseOf(course).offset * 60000);
+    const serve = new Date(sitDown.getTime() + serveOffset(party, course) * 60000);
     const minutes = stepMinutes(recipe);
     let end = serve.getTime();
     for (let i = recipe.steps.length - 1; i >= 0; i -= 1) {
@@ -151,22 +163,61 @@ export function timeline(party, dishes) {
         end = Math.min(end, sitDown.getTime() - (ARRIVE + 15) * 60000);
       }
       const start = end - minutes[i] * 60000;
-      events.push({ at: new Date(start), minutes: minutes[i], text: recipe.steps[i], dish: recipe.title, recipeId: recipe.id });
+      events.push({
+        key: `${recipe.id}:${i}`, at: new Date(start), minutes: minutes[i], text: recipe.steps[i], dish: recipe.title, recipeId: recipe.id,
+      });
       end = start;
     }
   });
-  // one "serve" moment per course time (mains and sides go out together)
-  const served = new Set();
-  COURSES.filter((course) => dishes.some((dish) => dish.course === course.id)).forEach((course) => {
-    if (served.has(course.offset)) return;
-    served.add(course.offset);
-    events.push({ at: new Date(sitDown.getTime() + course.offset * 60000), text: `Serve the ${course.name.toLowerCase()}`, serve: true });
+  // one "serve" moment per serving time, naming every course that goes out then
+  const byTime = new Map();
+  servedCourses(party, dishes).forEach((id) => {
+    const offset = serveOffset(party, id);
+    byTime.set(offset, [...(byTime.get(offset) ?? []), courseOf(id).name.toLowerCase()]);
   });
-  if (dishes.length) {
-    events.push({ at: new Date(sitDown.getTime() - (ARRIVE + 15) * 60000), minutes: 15, text: 'Set the table', host: true });
-    events.push({ at: new Date(sitDown.getTime() - ARRIVE * 60000), text: 'Guests arrive', serve: true });
+  byTime.forEach((names, offset) => {
+    const text = `Serve the ${names.join(' and ')}`;
+    events.push({ key: `serve:${offset}`, at: new Date(sitDown.getTime() + offset * 60000), text, serve: true });
+  });
+  if (party.dishes.length) {
+    events.push({ key: 'host:table', at: new Date(sitDown.getTime() - (ARRIVE + 15) * 60000), minutes: 15, text: 'Set the table', host: true });
+    events.push({ key: 'host:arrive', at: new Date(sitDown.getTime() - ARRIVE * 60000), text: 'Guests arrive', serve: true });
   }
   return events.sort((a, b) => a.at - b.at || (a.serve ? 1 : 0) - (b.serve ? 1 : 0));
+}
+
+const TEMPERATURE = /(\d{3})\s*°\s*F/i;
+const USES_OVEN = /\b(?:bake|roast|oven|broil)/i;
+
+// Two dishes that need the oven at different temperatures at the same time.
+// A dish holds the oven from the step that sets its temperature until its last oven step ends.
+export function ovenClashes(events) {
+  const ovens = new Map();
+  events.filter((event) => event.recipeId).forEach((event) => {
+    const temperature = event.text.match(TEMPERATURE)?.[1];
+    const oven = ovens.get(event.recipeId);
+    const end = event.at.getTime() + event.minutes * 60000;
+    if (temperature && !oven) ovens.set(event.recipeId, { dish: event.dish, temperature, from: event.at.getTime(), to: end });
+    else if (oven && USES_OVEN.test(event.text)) oven.to = Math.max(oven.to, end);
+  });
+  const list = [...ovens.values()];
+  const clashes = [];
+  list.forEach((a, i) => list.slice(i + 1).forEach((b) => {
+    const from = Math.max(a.from, b.from);
+    const to = Math.min(a.to, b.to);
+    if (from < to && a.temperature !== b.temperature) clashes.push({ a, b, from: new Date(from), to: new Date(to) });
+  }));
+  return clashes;
+}
+
+// What's happening now and what's next, for the day of the party
+export function nowAndNext(events, done, now) {
+  const steps = events.filter((event) => !event.serve);
+  const current = steps.filter((event) => !done.has(event.key) && event.at.getTime() <= now
+    && event.at.getTime() + (event.minutes ?? 0) * 60000 > now);
+  const next = events.find((event) => event.at.getTime() > now && !done.has(event.key));
+  const late = steps.filter((event) => !done.has(event.key) && event.at.getTime() + (event.minutes ?? 0) * 60000 <= now);
+  return { current, next, late };
 }
 
 // "6:45 PM", with the day when it isn't the party day ("Fri 4:00 PM")
