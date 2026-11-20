@@ -1,19 +1,16 @@
 # mise
 
-A recipe box that cooks with you: calm, warm and easy to read from across the kitchen.
+A small dinner party planner. Pick a menu, and mise builds the shopping list, a cooking timeline that works back from dinner time, and a 3D table setting for inspiration.
 
 ## Features
 
-- **Recipes:** save your own or find new ones, search, filter by tag or favorites
-- **Cook tonight:** recipes you can make with what's at home, one ingredient away, or favorites due a repeat
-- **Recipe page:** servings that rescale quantities, "Have" marks, add missing ingredients to groceries, add to your plan, notes, and "More like this"
-- **Cook mode:** one step at a time in large type, tap-to-start timers, and the screen stays on
-- **Plan:** pick what to cook each day, then add the whole week to groceries in one tap
-- **Groceries:** "To buy", sorted by aisle, and "At home"; bought items move to At home
-- **Find new recipes:** search [TheMealDB](https://www.themealdb.com) by ingredient and save with one tap
-- **Themes:** deep plum (default), a cream light theme, or automatic
-- **Installable:** add it to your phone's home screen and it works offline
-- **Backup:** everything is stored in your browser; export and import it as a JSON file
+- **Parties:** a date, a dinner time and your guests
+- **Ideas:** six themed dinners with a full menu; plan one in a tap
+- **Menu:** starters, mains, sides and dessert from your recipes, or simple items like "Baguette"
+- **Shopping:** one list for the whole party, scaled for your guests and sorted by aisle, with your own extras, "Have it" for what's already at home, and what goes on the table
+- **Timeline:** every step on one clock, ending as each course is served
+- **Table:** a 3D table in one of seven styles, with your guests' names on place cards
+- **Installable and offline,** with a JSON backup
 
 ## Running locally
 
@@ -25,6 +22,6 @@ npm run dev
 - `npm run build` builds the app into `dist/`
 - `npm run preview` serves the production build
 - `npm run lint` checks the code
-- `npm test` runs the unit tests for ingredients, matching, suggestions, aisles, timers and recipe import
+- `npm test` runs the unit tests for ingredients, the shopping list, the timeline, aisles and timers
 
-Built with React, Vite, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).
+Built with React, Vite, Fraunces and Figtree, three.js, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).

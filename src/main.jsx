@@ -1,12 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource-variable/inter-tight';
-import '@fontsource-variable/newsreader';
+// Fraunces with its soft axis for titles, Figtree for everything you read and tap
+import '@fontsource-variable/fraunces/full.css';
+import '@fontsource-variable/fraunces/full-italic.css';
+import '@fontsource-variable/figtree';
 import './styles.css';
-import { applyTheme, getTheme } from './lib/theme';
 import App from './App';
 
-applyTheme(getTheme());
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,7 +1,7 @@
 {
   "name": "mise",
-  "version": "0.1.0",
-  "description": "A recipe box that cooks with you",
+  "version": "2.0.0",
+  "description": "A small dinner party planner",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,13 +14,14 @@
   "author": "Elle Louie",
   "license": "ISC",
   "dependencies": {
-    "@fontsource-variable/inter-tight": "^5.3.0",
-    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource-variable/figtree": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "three": "^0.181.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

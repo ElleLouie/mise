@@ -14,9 +14,9 @@ export default defineConfig({
       manifest: {
         name: 'mise',
         short_name: 'mise',
-        description: 'Provisions & recipes: a recipe box that cooks with you',
-        theme_color: '#2a0f1a',
-        background_color: '#2a0f1a',
+        description: 'Dinner parties, planned: a menu, one shopping list, a cooking timeline and the table',
+        theme_color: '#f7f2e8',
+        background_color: '#f7f2e8',
         display: 'standalone',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
