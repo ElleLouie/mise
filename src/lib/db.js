@@ -1,6 +1,5 @@
 import Dexie from 'dexie';
-import sampleRecipes from './samples';
-import { ingredientName } from './ingredients';
+import sampleRecipes, { samplePartyFor } from './samples';
 
 // Everything is stored in the browser (IndexedDB), on the device you use.
 export const db = new Dexie('mise');
@@ -29,8 +28,21 @@ db.version(4).stores({
   plan: '++id, date, recipeId',
 });
 
-// fill a brand-new recipe box with a few samples so it isn't empty
-db.on('populate', (tx) => tx.table('recipes').bulkAdd(sampleRecipes()));
+// v5: mise becomes a dinner party planner; the weekly plan and groceries make way for parties
+db.version(5).stores({
+  recipes: 'id, title, createdAt, updatedAt, lastCookedAt, *tags',
+  larder: null,
+  list: null,
+  plan: null,
+  parties: 'id, date, updatedAt',
+});
+
+// start with a few recipes and one party so it isn't empty
+db.on('populate', async (tx) => {
+  const recipes = sampleRecipes();
+  await tx.table('recipes').bulkAdd(recipes);
+  await tx.table('parties').add(samplePartyFor(recipes));
+});
 
 export const newId = () => crypto.randomUUID();
 
@@ -56,8 +68,11 @@ export function blankRecipe() {
 
 export const saveRecipe = (recipe) => db.recipes.put({ ...recipe, updatedAt: Date.now() });
 
+// also takes the recipe off any party menus
 export async function deleteRecipe(id) {
-  await db.plan.where('recipeId').equals(id).delete();
+  await db.parties.toCollection().modify((party) => {
+    party.dishes = party.dishes.filter((dish) => dish.recipeId !== id);
+  });
   await db.recipes.delete(id);
 }
 
@@ -68,66 +83,38 @@ export async function addNote(recipe, { text, rating }) {
   await saveRecipe({ ...recipe, notes: [note, ...recipe.notes], lastCookedAt: date });
 }
 
-const DAY = 24 * 60 * 60 * 1000;
-
-// Favorites and well-rated recipes you haven't made in two weeks or more.
-export function cookAgain(recipes) {
-  const rating = (recipe) => recipe.notes[0]?.rating ?? 0;
-  return recipes
-    .filter((recipe) => (recipe.favorite || rating(recipe) >= 4)
-      && (!recipe.lastCookedAt || Date.now() - recipe.lastCookedAt > 14 * DAY))
-    .sort((a, b) => (a.lastCookedAt ?? 0) - (b.lastCookedAt ?? 0));
-}
-
-// The larder: names of things you have, like "lemons" or "white miso".
-export async function addToLarder(names) {
+// Dinner parties: when, how many, the menu (recipes by course), the table mood and what's been bought.
+export function blankParty() {
   const now = Date.now();
-  const items = names.map((name) => name.trim().toLowerCase()).filter(Boolean);
-  await db.larder.bulkPut(items.map((name) => ({ name, addedAt: now })));
+  const date = new Date(now + 7 * 24 * 60 * 60 * 1000);
+  return {
+    id: newId(),
+    name: '',
+    date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+    time: '19:30',
+    guests: 6,
+    mood: 'candlelight',
+    dishes: [],
+    bought: [],
+    createdAt: now,
+    updatedAt: now,
+  };
 }
 
-export const removeFromLarder = (name) => db.larder.delete(name);
+export const saveParty = (party) => db.parties.put({ ...party, updatedAt: Date.now() });
 
-// The shopping list. Items are full lines like "2 lemons"; names are kept for the larder.
-export async function addToList(lines, recipeTitle = null) {
-  const now = Date.now();
-  const existing = new Set((await db.list.where('done').equals(0).toArray()).map((item) => item.text.toLowerCase()));
-  const fresh = lines.map((line) => line.trim()).filter((line) => line && !existing.has(line.toLowerCase()));
-  await db.list.bulkAdd(fresh.map((text) => ({
-    text, name: ingredientName(text) || text.toLowerCase(), recipe: recipeTitle, done: 0, addedAt: now,
-  })));
-  return fresh.length;
-}
-
-export const toggleListItem = (item) => db.list.update(item.id, { done: item.done ? 0 : 1 });
-
-export const removeListItem = (id) => db.list.delete(id);
-
-// Checked-off items go into the larder and leave the list.
-export async function putAway() {
-  const done = await db.list.where('done').equals(1).toArray();
-  await addToLarder(done.map((item) => item.name));
-  await db.list.bulkDelete(done.map((item) => item.id));
-  return done.length;
-}
-
-// The plan: recipes on days.
-export const planRecipe = (date, recipeId) => db.plan.add({ date, recipeId });
-
-export const unplan = (id) => db.plan.delete(id);
+export const deleteParty = (id) => db.parties.delete(id);
 
 // Backups: everything as one JSON file, and back again.
 export async function exportRecipes() {
-  const [recipes, larder, list, plan] = await Promise.all([db.recipes.toArray(), db.larder.toArray(), db.list.toArray(), db.plan.toArray()]);
-  return JSON.stringify({ app: 'mise', version: 3, exportedAt: new Date().toISOString(), recipes, larder, list, plan }, null, 2);
+  const [recipes, parties] = await Promise.all([db.recipes.toArray(), db.parties.toArray()]);
+  return JSON.stringify({ app: 'mise', version: 4, exportedAt: new Date().toISOString(), recipes, parties }, null, 2);
 }
 
 export async function importRecipes(json) {
   const data = JSON.parse(json);
   if (data.app !== 'mise' || !Array.isArray(data.recipes)) throw new Error('This file is not a mise backup.');
   await db.recipes.bulkPut(data.recipes);
-  if (Array.isArray(data.larder)) await db.larder.bulkPut(data.larder);
-  if (Array.isArray(data.list)) await db.list.bulkPut(data.list);
-  if (Array.isArray(data.plan)) await db.plan.bulkPut(data.plan);
+  if (Array.isArray(data.parties)) await db.parties.bulkPut(data.parties);
   return data.recipes.length;
 }

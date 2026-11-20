@@ -55,7 +55,7 @@ export function scaleIngredient(line, factor) {
   return `${amount}${range}${gap}${rest}`.trim();
 }
 
-const UNITS = /^(?:g|kg|ml|l|oz|lb|lbs|cups?|tbsp|tsp|tablespoons?|teaspoons?|cans?|cloves?|handfuls?|slices?|pinch(?:es)?|bunch(?:es)?|sprigs?|pieces?)\b\.?\s*/i;
+export const UNITS = /^(?:g|kg|ml|l|oz|lb|lbs|cups?|tbsp|tsp|tablespoons?|teaspoons?|cans?|cloves?|handfuls?|slices?|pinch(?:es)?|bunch(?:es)?|sprigs?|pieces?)\b\.?\s*/i;
 const SEASONING = /^(?:salt|pepper|salt and pepper|water)\b/i;
 
 // The main ingredients by name only: "1 can (400g) white beans, drained" becomes "white beans".
@@ -80,8 +80,11 @@ export function ingredientName(line) {
 }
 
 // "lemons" and "lemon", "tomatoes" and "tomato" count as the same thing
-const singular = (word) => word.replace(/(?:oes|ies|s)$/, (end) => ({ oes: 'o', ies: 'y', s: '' }[end]));
+export const singular = (word) => word.replace(/(?:oes|ies|s)$/, (end) => ({ oes: 'o', ies: 'y', s: '' }[end]));
 const words = (name) => name.split(' ').map(singular);
+
+// "Lemons" and "lemon" as one comparable name
+export const sameName = (name) => words(name.toLowerCase()).join(' ');
 
 // Does something in the larder cover this ingredient? "white beans" is covered by "white beans" or "beans".
 export function covers(larderName, ingredient) {

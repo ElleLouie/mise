@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveRecipe, deleteRecipe, addNote, addToList, planRecipe } from '../lib/db';
+import { db, saveRecipe, saveParty, deleteRecipe, addNote } from '../lib/db';
 import { scaleIngredient } from '../lib/ingredients';
-import { missingFor, similar } from '../lib/suggest';
+import { similar } from '../lib/suggest';
+import { courseFor, isUpcoming } from '../lib/party';
 import { formatTime, formatDate } from '../lib/format';
-import { weekDays, dayLabel, today } from '../lib/week';
 import RecipeCard from '../components/RecipeCard';
 import Icon from '../components/Icon';
 import Soon from './Soon';
@@ -64,31 +64,26 @@ function Recipe() {
   const navigate = useNavigate();
   const recipe = useLiveQuery(() => db.recipes.get(id), [id], 'loading');
   const recipes = useLiveQuery(() => db.recipes.toArray(), []);
-  const larder = useLiveQuery(() => db.larder.toArray(), []);
+  const parties = useLiveQuery(() => db.parties.orderBy('date').toArray(), []);
   const [servings, setServings] = useState(null);
   const [checked, setChecked] = useState(() => new Set());
   const [added, setAdded] = useState(null);
+  const [now] = useState(() => Date.now());
 
   if (recipe === 'loading') return null;
   if (!recipe) return <Soon title="Not found" text="This recipe was deleted." />;
 
   const portions = servings ?? recipe.servings;
   const factor = portions / recipe.servings;
-  const missing = new Set(larder ? missingFor(recipe, larder) : recipe.ingredients);
+  const upcoming = (parties || []).filter((p) => isUpcoming(p, now));
   const toggle = (i) => setChecked((prev) => {
     const next = new Set(prev);
     if (next.has(i)) next.delete(i); else next.add(i);
     return next;
   });
-  const addMissing = async () => {
-    const lines = recipe.ingredients.filter((line) => missing.has(line)).map((line) => scaleIngredient(line, factor));
-    const count = await addToList(lines, recipe.title);
-    setAdded(count === 0 ? 'Already in your groceries' : `Added ${count} to groceries`);
-  };
-
   return (
     <div className="page recipe">
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
+      <Link to="/recipes" className="back_link"><Icon name="back" size={18} />Recipes</Link>
 
       {recipe.image && <img src={recipe.image} alt="" className="recipe_hero" />}
 
@@ -107,28 +102,25 @@ function Recipe() {
 
         <div className="actions">
           <Link to={`/recipe/${id}/cook?servings=${portions}`} className="button"><Icon name="play" size={18} />Start cooking</Link>
-          <label className="button button-quiet select_button">
-            <Icon name="calendar" size={18} />
-            <span>Plan</span>
-            <select
-              value=""
-              aria-label="Add to plan"
-              onChange={async (e) => {
-                const day = e.target.value;
-                await planRecipe(day, id);
-                setAdded(`Planned for ${dayLabel(day, 'short')}`);
-              }}
-            >
-              <option value="" disabled>Add to plan</option>
-              {[...weekDays(0), ...weekDays(1)].filter((day) => day >= today()).map((day) => (
-                <option key={day} value={day}>{dayLabel(day, 'short')}</option>
-              ))}
-            </select>
-          </label>
-          {missing.size > 0 && (
-            <button type="button" className="button button-quiet" onClick={addMissing}>
-              <Icon name="bag" size={18} />Add {missing.size} to groceries
-            </button>
+          {upcoming.length > 0 && (
+            <label className="button button-quiet select_button">
+              <Icon name="calendar" size={18} />
+              <span>Add to a party</span>
+              <select
+                value=""
+                aria-label="Add to a party"
+                onChange={async (e) => {
+                  const party = upcoming.find((p) => p.id === e.target.value);
+                  if (!party.dishes.some((d) => d.recipeId === id)) {
+                    await saveParty({ ...party, dishes: [...party.dishes, { recipeId: id, course: courseFor(recipe) }] });
+                  }
+                  setAdded(party);
+                }}
+              >
+                <option value="" disabled>Add to a party</option>
+                {upcoming.map((p) => <option key={p.id} value={p.id}>{p.name || 'Dinner party'}</option>)}
+              </select>
+            </label>
           )}
           <button
             type="button"
@@ -143,7 +135,7 @@ function Recipe() {
         </div>
         {added && (
           <p className="small" role="status">
-            {added} · <Link to={added.startsWith('Planned') ? '/plan' : '/groceries'} className="link">{added.startsWith('Planned') ? 'View plan' : 'View groceries'}</Link>
+            On the menu for {added.name || 'your party'} · <Link to={`/party/${added.id}`} className="link">View party</Link>
           </p>
         )}
       </header>
@@ -157,7 +149,6 @@ function Recipe() {
                 <label className={checked.has(i) ? 'checked' : ''}>
                   <input type="checkbox" checked={checked.has(i)} onChange={() => toggle(i)} />
                   <span>{scaleIngredient(line, factor)}</span>
-                  {!missing.has(line) && <span className="have">Have</span>}
                 </label>
               </li>
             ))}
@@ -208,7 +199,7 @@ function Recipe() {
         onClick={async () => {
           if (window.confirm(`Delete "${recipe.title}"?`)) {
             await deleteRecipe(id);
-            navigate('/');
+            navigate('/recipes');
           }
         }}
       >

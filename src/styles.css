@@ -1338,6 +1338,241 @@ input[type='checkbox'] {
   font-size: 17px;
 }
 
+
+/* parties */
+.section-tight {
+  margin-top: 20px;
+}
+
+.party_grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+.party_card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 14px 18px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  transition: transform 200ms ease;
+}
+
+.party_card:hover {
+  transform: translateY(-2px);
+}
+
+.party_swatch {
+  display: flex;
+  height: 72px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.party_swatch {
+  border: 1px solid var(--rule);
+}
+
+.party_head {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.party_swatch i {
+  flex: 1;
+}
+
+.party_swatch i:first-child {
+  flex: 2.4;
+}
+
+.party_name {
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.page_head .recipe_meta {
+  margin-top: 10px;
+}
+
+.tab_body {
+  margin-top: 24px;
+}
+
+/* the menu */
+.course {
+  margin-bottom: 22px;
+}
+
+.dish {
+  min-height: 64px;
+  gap: 14px;
+}
+
+.dish_image.recipe_image {
+  width: 46px;
+  height: 46px;
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: 10px;
+}
+
+.dish_image .icon {
+  width: 18px;
+}
+
+.row_link {
+  display: grid;
+  padding: 8px 0;
+}
+
+.row_sub {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* the timeline */
+.timeline {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 92px;
+  width: 1px;
+  background: var(--rule);
+}
+
+.moment {
+  position: relative;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 26px;
+  padding: 10px 0;
+}
+
+.moment::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 88px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.moment_time {
+  padding-top: 1px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.moment_body {
+  display: grid;
+  gap: 2px;
+}
+
+.moment_dish {
+  justify-self: start;
+  color: var(--accent-text);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.moment-serve .moment_text {
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+.moment-serve .moment_time,
+.moment-serve::before {
+  color: var(--accent-text);
+  background: var(--accent-text);
+}
+
+.moment-serve .moment_time {
+  background: none;
+}
+
+.moment-serve::before {
+  width: 13px;
+  height: 13px;
+  top: 19px;
+  left: 86px;
+}
+
+.moment-past {
+  opacity: 0.45;
+}
+
+/* the table */
+.table_frame {
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--surface);
+}
+
+.table_scene {
+  width: 100%;
+  height: min(62vh, 560px);
+  min-height: 320px;
+  cursor: grab;
+}
+
+.table_scene:active {
+  cursor: grabbing;
+}
+
+.table_scene canvas {
+  display: block;
+}
+
+.moods {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.mood {
+  display: grid;
+  gap: 8px;
+  padding: 8px 8px 10px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.mood .party_swatch {
+  height: 40px;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.mood-on {
+  border-color: var(--accent-text);
+}
+
 /* phones */
 @media (max-width: 760px) {
   .shell {
@@ -1429,6 +1664,31 @@ input[type='checkbox'] {
   .grid-row li {
     flex: 0 0 62%;
     scroll-snap-align: start;
+  }
+
+  .moods {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .table_scene {
+    height: 380px;
+  }
+
+  .moment {
+    grid-template-columns: 64px 1fr;
+    gap: 22px;
+  }
+
+  .timeline::before {
+    left: 75px;
+  }
+
+  .moment::before {
+    left: 71px;
+  }
+
+  .moment-serve::before {
+    left: 69px;
   }
 
   .discover {

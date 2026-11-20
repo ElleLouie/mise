@@ -32,7 +32,7 @@ function Settings() {
 
   return (
     <div className="page">
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
+      <Link to="/" className="back_link"><Icon name="back" size={18} />Parties</Link>
       <div className="panel">
         <h1 className="page_title">Settings</h1>
 

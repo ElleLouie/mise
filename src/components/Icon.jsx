@@ -1,5 +1,6 @@
 // Simple line icons, drawn on a 24 × 24 grid.
 const PATHS = {
+  table: <><path d="M3 9h18M5 9v11M19 9v11M7.5 13h9" /><path d="M8 9c0-2 1-4 4-4s4 2 4 4" /></>,
   book: <><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5v-15Z" /><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3" /></>,
   calendar: <><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" /></>,
   bag: <><path d="M5 8h14l-1.2 12.5H6.2L5 8Z" /><path d="M9 10V6.5a3 3 0 0 1 6 0V10" /></>,

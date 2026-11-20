@@ -5,11 +5,10 @@ import { db, blankRecipe, saveRecipe } from '../lib/db';
 import { findByIngredient, lookup, toRecipe } from '../lib/mealdb';
 import Icon from '../components/Icon';
 
-const IDEAS = ['chicken', 'salmon', 'beef', 'pasta', 'rice', 'tofu', 'mushrooms', 'lemon'];
+const IDEAS = ['chicken', 'lamb', 'salmon', 'beef', 'pasta', 'potatoes', 'mushrooms', 'chocolate'];
 
 function Discover() {
   const navigate = useNavigate();
-  const larder = useLiveQuery(() => db.larder.toArray(), []);
   const saved = useLiveQuery(() => db.recipes.toArray(), []);
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('chicken');
@@ -43,13 +42,12 @@ function Discover() {
     }
   };
 
-  // ideas from the pantry first
-  const ideas = [...new Set([...(larder || []).map((item) => item.name), ...IDEAS])].slice(0, 10);
+  const ideas = IDEAS;
   const savedTitles = new Set((saved || []).map((r) => r.title));
 
   return (
     <div className="page">
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Recipes</Link>
+      <Link to="/recipes" className="back_link"><Icon name="back" size={18} />Recipes</Link>
       <h1 className="page_title">Find new recipes</h1>
 
       <form

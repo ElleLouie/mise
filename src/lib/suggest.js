@@ -1,25 +1,4 @@
-import { ingredientName, covers } from './ingredients.js';
-
-// assumed to be in every kitchen, so never counted as missing
-const STAPLES = ['salt', 'pepper', 'water'];
-
-// The ingredients of a recipe that aren't in the larder, as full lines.
-export function missingFor(recipe, larder) {
-  return recipe.ingredients.filter((line) => {
-    const name = ingredientName(line);
-    if (!name || STAPLES.some((staple) => covers(staple, name))) return false;
-    return !larder.some((item) => covers(item.name, name));
-  });
-}
-
-// Recipes you can make (or almost make) with what's in the larder, fewest missing first.
-export function canMake(recipes, larder, maxMissing = 1) {
-  if (larder.length === 0) return [];
-  return recipes
-    .map((recipe) => ({ recipe, missing: missingFor(recipe, larder) }))
-    .filter(({ missing }) => missing.length <= maxMissing)
-    .sort((a, b) => a.missing.length - b.missing.length);
-}
+import { ingredientName } from './ingredients.js';
 
 // Recipes that share ingredients and tags with this one.
 export function similar(recipe, recipes, count = 3) {

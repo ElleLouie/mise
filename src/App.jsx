@@ -1,19 +1,19 @@
 import { BrowserRouter, Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
+import Parties from './pages/Parties';
+import Party from './pages/Party';
+import PartyForm from './pages/PartyForm';
+import Recipes from './pages/Recipes';
 import Recipe from './pages/Recipe';
 import EditRecipe from './pages/EditRecipe';
 import Cook from './pages/Cook';
 import Settings from './pages/Settings';
 import Soon from './pages/Soon';
-import Groceries from './pages/Groceries';
 import Discover from './pages/Discover';
-import Table from './pages/Table';
 import Icon from './components/Icon';
 
 const tabs = [
-  { to: '/', label: 'Recipes', icon: 'book' },
-  { to: '/plan', label: 'Plan', icon: 'calendar' },
-  { to: '/groceries', label: 'Groceries', icon: 'bag' },
+  { to: '/', label: 'Parties', icon: 'table' },
+  { to: '/recipes', label: 'Recipes', icon: 'book' },
 ];
 
 // A sidebar on wide screens, a tab bar along the bottom on phones.
@@ -46,18 +46,20 @@ function App() {
         <Navigation />
         <main className="app">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/new" element={<EditRecipe />} />
+            <Route path="/" element={<Parties />} />
+            <Route path="/party/new" element={<PartyForm />} />
+            <Route path="/party/:id" element={<Party />} />
+            <Route path="/party/:id/edit" element={<PartyForm />} />
+            <Route path="/recipes" element={<Recipes />} />
+            <Route path="/recipes/new" element={<EditRecipe />} />
             <Route path="/recipe/:id" element={<Recipe />} />
             <Route path="/recipe/:id/edit" element={<EditRecipe />} />
             <Route path="/recipe/:id/cook" element={<Cook />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/plan" element={<Table />} />
             <Route path="/discover" element={<Discover />} />
-            <Route path="/groceries" element={<Groceries />} />
-            {/* earlier names for these pages */}
-            {['/table'].map((path) => <Route key={path} path={path} element={<Navigate to="/plan" replace />} />)}
-            {['/shopping', '/list', '/pantry', '/larder'].map((path) => <Route key={path} path={path} element={<Navigate to="/groceries" replace />} />)}
+            {/* pages from the first version */}
+            <Route path="/new" element={<Navigate to="/recipes/new" replace />} />
+            {['/plan', '/table', '/groceries', '/shopping', '/list', '/pantry', '/larder'].map((path) => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
             <Route path="*" element={<Soon title="Not found" text="This page doesn't exist." />} />
           </Routes>
         </main>

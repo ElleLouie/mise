@@ -36,7 +36,7 @@ function Form({ recipe, isNew }) {
 
   return (
     <div className="page">
-      <Link to={isNew ? '/' : `/recipe/${recipe.id}`} className="back_link"><Icon name="back" size={18} />Back</Link>
+      <Link to={isNew ? '/recipes' : `/recipe/${recipe.id}`} className="back_link"><Icon name="back" size={18} />Back</Link>
       <form className="panel form" onSubmit={onSubmit}>
         <h1 className="page_title">{isNew ? 'New recipe' : 'Edit recipe'}</h1>
         <label className="field">

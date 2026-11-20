@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import {
   parseIngredient, formatQuantity, scaleIngredient, keyIngredients, ingredientName, covers,
 } from './ingredients.js';
-import { missingFor, canMake, similar } from './suggest.js';
+import { similar } from './suggest.js';
 import { aisleFor } from './aisles.js';
 import { toRecipe } from './mealdb.js';
-import { weekDays, isoDate } from './week.js';
+import { shoppingList, stepMinutes, timeline, courseFor, menuDishes } from './party.js';
 import { findTimers, splitStep, formatClock } from './timers.js';
 
 test('parses common quantity styles', () => {
@@ -82,15 +82,6 @@ test('matches larder items to ingredients', () => {
   assert.ok(!covers('butter', 'peanut'));
 });
 
-test('finds missing ingredients and what you can make', () => {
-  const recipe = { id: 'a', tags: ['quick'], ingredients: ['2 salmon fillets', '1 lemon', 'Salt and pepper'] };
-  const larder = [{ name: 'salmon' }];
-  assert.deepEqual(missingFor(recipe, larder), ['1 lemon']);
-  assert.equal(canMake([recipe], larder).length, 1);
-  assert.equal(canMake([recipe], [], 1).length, 0);
-  assert.equal(canMake([recipe], [{ name: 'salmon' }, { name: 'lemons' }])[0].missing.length, 0);
-});
-
 test('finds similar recipes', () => {
   const a = { id: 'a', tags: ['quick'], ingredients: ['1 lemon', '2 tbsp butter'] };
   const b = { id: 'b', tags: ['quick'], ingredients: ['1 lemon', 'pasta'] };
@@ -130,10 +121,66 @@ test('turns a TheMealDB meal into a recipe', () => {
   assert.equal(recipe.source, 'https://www.themealdb.com/meal/52772');
 });
 
-test('lists the days of a week, Monday first', () => {
-  const thursday = new Date(2026, 9, 29);
-  assert.deepEqual(weekDays(0, thursday), ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30', '2026-10-31', '2026-11-01']);
-  assert.equal(weekDays(1, thursday)[0], '2026-11-02');
-  assert.equal(weekDays(0, new Date(2026, 10, 1))[0], '2026-10-26');
-  assert.equal(isoDate(new Date(2026, 0, 5)), '2026-01-05');
+const chicken = {
+  id: 'c', title: 'Roast chicken', servings: 4, minutes: 90, tags: ['main'],
+  ingredients: ['1 chicken', '2 lemons', 'Salt and pepper'],
+  steps: ['Heat the oven.', 'Roast for 1 hour.', 'Rest for 15 minutes.'],
+};
+const salad = {
+  id: 's', title: 'Salad', servings: 2, minutes: 10, tags: ['side'],
+  ingredients: ['1 lemon', '1 head lettuce'],
+  steps: ['Toss everything together.'],
+};
+const party = { date: '2026-12-05', time: '19:30', guests: 8, dishes: [{ recipeId: 'c', course: 'main' }, { recipeId: 's', course: 'side' }, { recipeId: 'gone', course: 'dessert' }] };
+
+test('scales the menu for the guests', () => {
+  const dishes = menuDishes(party, [chicken, salad]);
+  assert.deepEqual(dishes.map((d) => d.factor), [2, 4]);
+});
+
+test('builds one shopping list for the menu', () => {
+  const items = shoppingList(menuDishes(party, [chicken, salad]));
+  const lemons = items.find((item) => item.key === 'lemon');
+  assert.equal(lemons.text, '8 lemons');
+  assert.deepEqual(lemons.dishes, ['Roast chicken', 'Salad']);
+  assert.ok(!items.some((item) => item.name.includes('salt')));
+  assert.equal(items.find((item) => item.key === 'chicken').text, '2 chickens');
+  const more = shoppingList([{ recipe: { title: 'A', ingredients: ['3 tbsp olive oil', '1 blood orange', 'Flaky salt'] }, factor: 1.5 },
+    { recipe: { title: 'B', ingredients: ['½ cup olive oil', 'Flaky salt', '1 whole chicken (about 1.8kg)'] }, factor: 1.5 }]);
+  const text = (key) => more.find((item) => item.key === key).text;
+  assert.equal(text('olive oil'), 'Olive oil');
+  assert.equal(text('blood orange'), '2 blood oranges');
+  assert.equal(text('flaky salt'), 'Flaky salt');
+  assert.equal(text('whole chicken'), '2 whole chicken (about 1.8kg)');
+});
+
+test('times each step', () => {
+  assert.deepEqual(stepMinutes(chicken), [15, 60, 15]);
+  assert.deepEqual(stepMinutes(salad), [10]);
+});
+
+test('works back from dinner time', () => {
+  const events = timeline(party, menuDishes(party, [chicken, salad]));
+  const at = (text) => events.find((e) => e.text === text).at;
+  // mains go out 30 minutes after sitting down at 7:30
+  assert.equal(at('Rest for 15 minutes.').getHours() * 60 + at('Rest for 15 minutes.').getMinutes(), 19 * 60 + 45);
+  assert.equal(at('Heat the oven.').getHours() * 60 + at('Heat the oven.').getMinutes(), 18 * 60 + 30);
+  assert.equal(at('Serve the mains').getMinutes(), 0);
+  assert.equal(events.filter((e) => e.serve).length, 2);
+  assert.equal(events[0].text, 'Heat the oven.');
+});
+
+test('makes dessert ahead', () => {
+  const cake = { id: 'k', title: 'Cake', servings: 8, minutes: 60, tags: [], ingredients: [], steps: ['Mix.', 'Bake for 40 minutes.', 'Slice and serve.'] };
+  const dinner = { ...party, dishes: [{ recipeId: 'k', course: 'dessert' }] };
+  const events = timeline(dinner, menuDishes(dinner, [cake]));
+  const at = (text) => events.find((e) => e.text === text).at;
+  assert.equal(at('Bake for 40 minutes.').getHours() * 60 + at('Bake for 40 minutes.').getMinutes(), 18 * 60 + 5);
+  assert.equal(at('Slice and serve.').getHours() * 60 + at('Slice and serve.').getMinutes(), 20 * 60 + 50);
+});
+
+test('guesses the course from tags', () => {
+  assert.equal(courseFor({ tags: ['Dessert'] }), 'dessert');
+  assert.equal(courseFor({ tags: ['side'] }), 'side');
+  assert.equal(courseFor({ tags: [] }), 'main');
 });
