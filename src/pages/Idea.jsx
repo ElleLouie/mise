@@ -30,7 +30,7 @@ function Idea() {
       <p className="lede">{idea.blurb}</p>
       <div className="idea_mood">
         <Swatch mood={idea.mood} />
-        <span className="small">Table: {moodFor(idea.mood).name}</span>
+        <span className="small">{moodFor(idea.mood).name} table</span>
       </div>
 
       {COURSES.map((course) => {

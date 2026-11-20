@@ -25,4 +25,4 @@ npm run dev
 - `npm run lint` checks the code
 - `npm test` runs the unit tests for ingredients, the shopping list, the timeline, aisles, timers and recipe import
 
-Built with React, Vite, Inter, three.js, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).
+Built with React, Vite, Fraunces and Figtree, three.js, Dexie (IndexedDB) and vite-plugin-pwa. Hosted on Netlify (settings in `netlify.toml`).

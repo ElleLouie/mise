@@ -19,6 +19,7 @@ const PATHS = {
   utensils: <><path d="M7 3v7.5A2 2 0 0 0 9 12.5V21M5 3v5M9 3v5" /><path d="M17 3c-2.2 2-2.2 7 0 9v9" /></>,
   compass: <><circle cx="12" cy="12" r="8.5" /><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" /></>,
   back: <path d="M15 5 8 12l7 7" />,
+  chevron: <path d="m9 5 7 7-7 7" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
 };

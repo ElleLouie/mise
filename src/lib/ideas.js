@@ -9,7 +9,7 @@ export const ideas = [
     id: 'bbq',
     name: 'Backyard BBQ',
     blurb: 'Smoky, sticky and easy to share.',
-    mood: 'citrus',
+    mood: 'gingham',
     dishes: [
       r('Grilled corn with chili lime butter', 'starter', 4, 20, [
         '4 ears corn', '4 tbsp butter, softened', '1 lime, zested and juiced', '1 tsp chili flakes', '¼ cup grated parmesan',

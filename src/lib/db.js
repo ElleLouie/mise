@@ -93,7 +93,7 @@ export function blankParty() {
     date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
     time: '19:30',
     guests: 6,
-    mood: 'ice',
+    mood: 'gingham',
     dishes: [],
     bought: [],
     createdAt: now,

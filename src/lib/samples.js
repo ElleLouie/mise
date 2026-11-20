@@ -199,7 +199,7 @@ export function samplePartyFor(recipes) {
     date: iso,
     time: '19:30',
     guests: 6,
-    mood: 'ice',
+    mood: 'gingham',
     dishes: [
       { recipeId: byTitle('Burrata with blood oranges'), course: 'starter' },
       { recipeId: byTitle('Herb roast chicken'), course: 'main' },

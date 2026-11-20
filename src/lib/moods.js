@@ -1,6 +1,14 @@
 // Table settings to pick from: the colours of the cloth, plates, napkins, flowers and metal.
 export const moods = [
   {
+    id: 'gingham',
+    wood: '#a07b58',
+    name: 'Summer gingham',
+    // the cloth gets a blue and white check (see TableScene)
+    cloth: '#f7f1e3', check: '#5d86b3', plate: '#fffaf0', charger: '#d5e5ee', napkin: '#e9b949', flowers: ['#f2c14e', '#fffaf2', '#e9893f'],
+    leaves: '#6f8a4e', metal: '#cfcfc8', candle: '#fffaf2', glass: '#e8f1f5', backdrop: '#f4ead6',
+  },
+  {
     id: 'ice',
     wood: '#b59a7c',
     name: 'Ice & orange',

@@ -191,7 +191,7 @@ function Table({ party }) {
             onClick={() => saveParty({ ...party, mood: m.id })}
           >
             <span className="party_swatch" aria-hidden="true">
-              {[m.cloth, m.napkin, m.flowers[0], m.plate].map((color) => <i key={color} style={{ background: color }} />)}
+              {[m.check ?? m.cloth, m.napkin, m.flowers[0], m.plate].map((color, i) => <i key={`${i}-${color}`} style={{ background: color }} />)}
             </span>
             <span className="label">{m.name}</span>
           </button>

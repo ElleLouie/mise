@@ -17,6 +17,28 @@ function seeded(seed) {
   };
 }
 
+// a blue and white check, drawn once per colour and repeated across the cloth
+function gingham(base, check) {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, size, size);
+  ctx.globalAlpha = 0.45;
+  ctx.fillStyle = check;
+  ctx.fillRect(0, 0, size / 2, size);
+  ctx.fillRect(0, 0, size, size / 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.NearestFilter;
+  texture.anisotropy = 8;
+  return texture;
+}
+
 const lathe = (points, segments = 48) => new THREE.LatheGeometry(points.map(([x, y]) => new THREE.Vector2(x, y)), segments);
 
 const PLATE = lathe([[0, 0.002], [0.09, 0.002], [0.1, 0.005], [0.126, 0.015], [0.13, 0.014], [0.104, 0], [0, 0]]);
@@ -42,8 +64,15 @@ function build(mood, guests) {
   const length = perSide * 0.62 + 0.3;
 
   const wood = mat(mood.wood, { roughness: 0.7 });
+  const pattern = mood.check ? gingham(mood.cloth, mood.check) : null;
+  if (pattern) pattern.repeat.set(12, 12);
   const cloth = new THREE.MeshPhysicalMaterial({
-    color: mood.cloth, roughness: 0.92, sheen: 0.3, sheenColor: new THREE.Color(mood.cloth).offsetHSL(0, 0, 0.12), sheenRoughness: 0.7,
+    color: pattern ? '#ffffff' : mood.cloth,
+    map: pattern,
+    roughness: 0.92,
+    sheen: 0.3,
+    sheenColor: new THREE.Color(mood.cloth).offsetHSL(0, 0, 0.12),
+    sheenRoughness: 0.7,
   });
   const metal = mat(mood.metal, { metalness: 1, roughness: 0.28 });
   const plate = mat(mood.plate, { roughness: 0.35, side: THREE.DoubleSide });
@@ -243,6 +272,7 @@ function TableScene({ mood, guests }) {
       table.traverse((object) => {
         if (!object.isMesh) return;
         if (![PLATE, GLASS, TUMBLER, STICK, VASE].includes(object.geometry)) object.geometry.dispose();
+        object.material.map?.dispose();
         object.material.dispose();
       });
     };
