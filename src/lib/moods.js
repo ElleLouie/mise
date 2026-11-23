@@ -1,56 +1,8 @@
-// Table settings to pick from: the colours of the cloth, plates, napkins, flowers and metal.
-export const moods = [
-  {
-    id: 'gingham',
-    wood: '#a07b58',
-    name: 'Summer gingham',
-    // the cloth gets a blue and white check (see TableScene)
-    cloth: '#f7f1e3', check: '#5d86b3', plate: '#fffaf0', charger: '#d5e5ee', napkin: '#e9b949', flowers: ['#f2c14e', '#fffaf2', '#e9893f'],
-    leaves: '#6f8a4e', metal: '#cfcfc8', candle: '#fffaf2', glass: '#e8f1f5', backdrop: '#f4ead6',
-  },
-  {
-    id: 'ice',
-    wood: '#b59a7c',
-    name: 'Ice & orange',
-    cloth: '#f4eee2', plate: '#ffffff', charger: '#8fc0dc', napkin: '#e8692c', flowers: ['#f08a4b', '#f6c39a', '#fffaf2'],
-    leaves: '#6f8a6a', metal: '#cfd5da', candle: '#fffaf2', glass: '#d6eaf5', backdrop: '#f7f2e8',
-  },
-  {
-    id: 'candlelight',
-    wood: '#4a2f22',
-    name: 'Candlelight',
-    cloth: '#5a1424', plate: '#efe6d6', charger: '#b08a4a', napkin: '#5f6420', flowers: ['#7a0f2b', '#a3264a', '#3d0a17'],
-    leaves: '#3e4a22', metal: '#c49a52', candle: '#f2e8d5', glass: '#f3e1c8', backdrop: '#2a0f1a',
-  },
-  {
-    id: 'garden',
-    wood: '#a08466',
-    name: 'Garden',
-    cloth: '#eee8da', plate: '#fbf8f1', charger: '#c9cfb6', napkin: '#a6b38c', flowers: ['#f1b8b0', '#f7d9c4', '#fffaf2'],
-    leaves: '#7d8f5c', metal: '#c9ccd1', candle: '#fffaf2', glass: '#e9f0ea', backdrop: '#e7e2d3',
-  },
-  {
-    id: 'citrus',
-    wood: '#9a7b5c',
-    name: 'Citrus',
-    cloth: '#f4ecd9', plate: '#ffffff', charger: '#2f4f9e', napkin: '#3a5cad', flowers: ['#f2c53d', '#f7dc6f', '#ffffff'],
-    leaves: '#56743a', metal: '#cfd2d6', candle: '#fffaf2', glass: '#eef3f8', backdrop: '#ebe4d2',
-  },
-  {
-    id: 'plum',
-    wood: '#3a2419',
-    name: 'Plum & olive',
-    cloth: '#3a1625', plate: '#f4ead9', charger: '#4b1d31', napkin: '#8f9a2e', flowers: ['#8e1f45', '#c25a7a', '#efe2d2'],
-    leaves: '#5d6b14', metal: '#c49a52', candle: '#f4ead9', glass: '#f0dfe4', backdrop: '#2a0f1a',
-  },
-  {
-    id: 'linen',
-    wood: '#7d6450',
-    name: 'Linen',
-    cloth: '#d9cdb6', plate: '#cbbca4', charger: '#8a7a63', napkin: '#a4502f', flowers: ['#c9a27a', '#e6d3b3', '#a4502f'],
-    leaves: '#8a8a5c', metal: '#2b2622', candle: '#f2e8d5', glass: '#efe8dc', backdrop: '#cfc3ab',
-  },
-];
+// Table moods are the seed library's palettes; the original seven ids (gingham, ice, candlelight,
+// garden, citrus, plum, linen) are its first seven.
+import { PALETTES } from './seeds.js';
+
+export const moods = PALETTES;
 
 export const moodFor = (id) => moods.find((mood) => mood.id === id) ?? moods[0];
 
@@ -83,6 +35,30 @@ const DECOR = {
   linen: {
     cloth: 'Oatmeal linen tablecloth', napkins: 'rust napkins', flowers: 'bunches of dried grasses',
     candles: 'beeswax candles', extra: 'Stoneware plates',
+  },
+  cherry: {
+    cloth: 'Red gingham tablecloth', napkins: 'cherry red napkins', flowers: 'bunches of red and pink sweet peas',
+    candles: 'white taper candles', extra: 'Cake stands',
+  },
+  bistro: {
+    cloth: 'Navy check tablecloth', napkins: 'navy napkins', flowers: 'bunches of apricot roses',
+    candles: 'white taper candles', extra: 'Apricot chargers',
+  },
+  midnight: {
+    cloth: 'Midnight blue tablecloth', napkins: 'rust napkins', flowers: 'bunches of cream ranunculus',
+    candles: 'cream taper candles', extra: 'Brass candlesticks',
+  },
+  pistachio: {
+    cloth: 'Pistachio linen tablecloth', napkins: 'blush napkins', flowers: 'bunches of peach roses',
+    candles: 'white taper candles', extra: 'Gold cutlery',
+  },
+  tomato: {
+    cloth: 'Red check tablecloth', napkins: 'basil green napkins', flowers: 'bunches of orange zinnias',
+    candles: 'white taper candles', extra: 'A bowl of heirloom tomatoes',
+  },
+  alpine: {
+    cloth: 'Red check tablecloth', napkins: 'red napkins', flowers: 'pine branches',
+    candles: 'white pillar candles', extra: 'Wooden boards',
   },
 };
 
