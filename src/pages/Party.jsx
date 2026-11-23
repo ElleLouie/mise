@@ -12,6 +12,8 @@ import { findTimers, formatClock } from '../lib/timers';
 import { useTimers, useWakeLock } from '../lib/kitchen';
 import { aisleOrder } from '../lib/aisles';
 import { moods, moodFor } from '../lib/moods';
+import { planView } from '../lib/vibes';
+import { usePaletteTint } from '../lib/tint';
 import { formatTime } from '../lib/format';
 import { RecipeImage } from '../components/RecipeCard';
 import Icon from '../components/Icon';
@@ -395,7 +397,7 @@ function Table({ party, removed }) {
     <>
       <div className="table_frame">
         <Suspense fallback={<div className="table_scene" />}>
-          <TableScene mood={mood} guests={Math.min(seats, 14)} names={names} />
+          <TableScene palette={party.palette} guests={Math.min(seats, 14)} names={names} />
         </Suspense>
       </div>
       <p className="small">Drag to look around. The table&apos;s flowers, candles and linens are on the shopping list.</p>
@@ -447,12 +449,16 @@ function Table({ party, removed }) {
 function Party() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
-  const party = useLiveQuery(() => db.parties.get(id), [id], 'loading');
+  const vibe = useLiveQuery(() => db.vibes.get(id), [id], 'loading');
   const undo = useUndo();
   const recipes = useLiveQuery(() => db.recipes.orderBy('title').toArray(), []);
+  // the plan wears its vibe's colours
+  usePaletteTint(vibe && vibe !== 'loading' ? vibe.palette : null);
 
-  if (party === 'loading' || !recipes) return null;
-  if (!party) return <Soon title="Not found" text="This party was deleted." />;
+  if (vibe === 'loading' || !recipes) return null;
+  if (!vibe?.plan) return <Soon title="Not found" text="This dinner isn't planned." />;
+  // the planning tabs work on the vibe's plan in the shape of a party
+  const party = planView(vibe);
 
   const tab = TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'menu';
   const dishes = menuDishes(party, recipes);
@@ -461,7 +467,7 @@ function Party() {
 
   return (
     <div className={tab === 'table' ? 'page' : 'page narrow'}>
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Parties</Link>
+      <Link to={`/vibe/${id}`} className="back_link"><Icon name="back" size={18} />The vibe</Link>
       <header className="page_head party_head">
         <div>
           <h1 className="page_title">{party.name || 'Dinner party'}</h1>
@@ -470,7 +476,7 @@ function Party() {
             <span className="meta_item"><Icon name="people" size={18} />{seatsFor(party)} guests</span>
           </p>
         </div>
-        <Link to={`/party/${id}/edit`} className="button button-quiet button-icon" aria-label="Edit party"><Icon name="edit" size={18} /></Link>
+        <Link to={`/vibe/${id}/plan/edit`} className="button button-quiet button-icon" aria-label="Edit party"><Icon name="edit" size={18} /></Link>
       </header>
 
       <div className="segmented" role="tablist" aria-label="Party">

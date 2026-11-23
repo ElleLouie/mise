@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'docs'] },
   js.configs.recommended,
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
@@ -23,7 +23,8 @@ export default [
       ...reactHooks.configs.recommended.rules,
       quotes: ['error', 'single'],
       'max-len': ['error', 200],
-      'no-unused-vars': ['error', { vars: 'all', args: 'none' }],
+      // destructuring a field away to keep the rest is fine
+      'no-unused-vars': ['error', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'react/prop-types': 'off',
     },
   },

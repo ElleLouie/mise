@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, blankParty, saveParty, deleteParty, partyFromIdea } from '../lib/db';
+import {
+  db, blankParty, saveParty, stopHosting, partyFromIdea,
+} from '../lib/db';
+import { planView } from '../lib/vibes';
 import { ideaFor } from '../lib/ideas';
 import Icon from '../components/Icon';
 
@@ -16,12 +19,12 @@ function Form({ party, isNew, idea, titles }) {
     const details = { ...party, ...form, name: form.name.trim(), guests: Math.max(1, Number(form.guests) || 1) };
     if (idea) await partyFromIdea(details, idea, titles);
     else await saveParty(details);
-    navigate(`/party/${party.id}${idea ? '?tab=menu' : ''}`, { replace: true });
+    navigate(`/vibe/${party.id}/plan`, { replace: true });
   };
 
   return (
     <div className="page">
-      <Link to={isNew ? (idea ? `/ideas/${idea.id}` : '/') : `/party/${party.id}`} className="back_link"><Icon name="back" size={18} />Back</Link>
+      <Link to={isNew ? (idea ? `/ideas/${idea.id}` : '/saved') : `/vibe/${party.id}/plan`} className="back_link"><Icon name="back" size={18} />Back</Link>
       <form className="panel form" onSubmit={onSubmit}>
         <h1 className="page_title">{isNew ? 'New party' : 'Edit party'}</h1>
         {idea && <p className="lede">{idea.name} · {titles.length} dishes</p>}
@@ -50,13 +53,13 @@ function Form({ party, isNew, idea, titles }) {
             type="button"
             className="link link-danger"
             onClick={async () => {
-              if (window.confirm(`Delete "${party.name || 'this party'}"?`)) {
-                await deleteParty(party.id);
-                navigate('/', { replace: true });
+              if (window.confirm(`Stop planning "${party.name || 'this dinner'}"? The vibe stays saved.`)) {
+                await stopHosting(party.id);
+                navigate(`/vibe/${party.id}`, { replace: true });
               }
             }}
           >
-            Delete party
+            Stop planning
           </button>
         )}
       </form>
@@ -68,12 +71,12 @@ function PartyForm() {
   const { id } = useParams();
   const { state } = useLocation();
   const idea = state?.idea ? ideaFor(state.idea) : null;
-  const party = useLiveQuery(() => (id ? db.parties.get(id) : null), [id], 'loading');
+  const vibe = useLiveQuery(() => (id ? db.vibes.get(id) : null), [id], 'loading');
   const [fresh] = useState(blankParty);
 
   if (!id) return <Form party={fresh} isNew idea={idea} titles={state?.titles ?? []} />;
-  if (party === 'loading' || !party) return null;
-  return <Form key={party.id} party={party} />;
+  if (vibe === 'loading' || !vibe?.plan) return null;
+  return <Form key={vibe.id} party={planView(vibe)} />;
 }
 
 export default PartyForm;

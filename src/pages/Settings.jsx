@@ -30,12 +30,12 @@ function Settings() {
 
   return (
     <div className="page">
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Parties</Link>
+      <Link to="/" className="back_link"><Icon name="back" size={18} />Discover</Link>
       <div className="panel">
         <h1 className="page_title">Settings</h1>
 
         <h2 className="section_title settings_title">Backup</h2>
-        <p className="small">Your parties and recipes are saved on this device only. Download a copy to keep them safe.</p>
+        <p className="small">Your vibes and recipes are saved on this device only. Download a copy to keep them safe.</p>
         <div className="form_actions form_actions-left">
           <button type="button" className="button" onClick={download}>Download</button>
           <button type="button" className="button button-quiet" onClick={() => fileInput.current.click()}>Import</button>
