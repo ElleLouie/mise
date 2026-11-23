@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'docs'] },
   js.configs.recommended,
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
