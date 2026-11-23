@@ -13,6 +13,7 @@ import { useTimers, useWakeLock } from '../lib/kitchen';
 import { aisleOrder } from '../lib/aisles';
 import { moods, moodFor } from '../lib/moods';
 import { planView } from '../lib/vibes';
+import { usePaletteTint } from '../lib/tint';
 import { formatTime } from '../lib/format';
 import { RecipeImage } from '../components/RecipeCard';
 import Icon from '../components/Icon';
@@ -451,6 +452,8 @@ function Party() {
   const vibe = useLiveQuery(() => db.vibes.get(id), [id], 'loading');
   const undo = useUndo();
   const recipes = useLiveQuery(() => db.recipes.orderBy('title').toArray(), []);
+  // the plan wears its vibe's colours
+  usePaletteTint(vibe && vibe !== 'loading' ? vibe.palette : null);
 
   if (vibe === 'loading' || !recipes) return null;
   if (!vibe?.plan) return <Soon title="Not found" text="This dinner isn't planned." />;
@@ -464,7 +467,7 @@ function Party() {
 
   return (
     <div className={tab === 'table' ? 'page' : 'page narrow'}>
-      <Link to="/" className="back_link"><Icon name="back" size={18} />Parties</Link>
+      <Link to={`/vibe/${id}`} className="back_link"><Icon name="back" size={18} />The vibe</Link>
       <header className="page_head party_head">
         <div>
           <h1 className="page_title">{party.name || 'Dinner party'}</h1>
@@ -473,7 +476,7 @@ function Party() {
             <span className="meta_item"><Icon name="people" size={18} />{seatsFor(party)} guests</span>
           </p>
         </div>
-        <Link to={`/party/${id}/edit`} className="button button-quiet button-icon" aria-label="Edit party"><Icon name="edit" size={18} /></Link>
+        <Link to={`/vibe/${id}/plan/edit`} className="button button-quiet button-icon" aria-label="Edit party"><Icon name="edit" size={18} /></Link>
       </header>
 
       <div className="segmented" role="tablist" aria-label="Party">

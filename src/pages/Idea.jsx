@@ -61,7 +61,7 @@ function Idea() {
           type="button"
           className="button button-wide"
           disabled={picked.size === 0}
-          onClick={() => navigate('/party/new', { state: { idea: idea.id, titles: [...picked] } })}
+          onClick={() => navigate('/plan/new', { state: { idea: idea.id, titles: [...picked] } })}
         >
           Plan this dinner · {picked.size} {picked.size === 1 ? 'dish' : 'dishes'}
         </button>

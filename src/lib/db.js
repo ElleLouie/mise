@@ -3,6 +3,7 @@ import sampleRecipes, { samplePartyFor } from './samples.js';
 import {
   partyToVibe, applyPlanView, newPlan,
 } from './vibes.js';
+import { themeFor } from './seeds.js';
 
 // Everything is stored in the browser (IndexedDB), on the device you use.
 export const db = new Dexie('mise');
@@ -96,7 +97,8 @@ export const deleteVibe = (id) => db.vibes.delete(id);
 
 // "Host this": the vibe gets a plan (if it doesn't have one yet)
 export async function hostVibe(vibe) {
-  const hosted = { ...vibe, plan: vibe.plan ?? newPlan(vibe) };
+  // the plan goes by the vibe's name, or its theme's
+  const hosted = { ...vibe, name: vibe.name || themeFor(vibe.themeId)?.name || '', plan: vibe.plan ?? newPlan(vibe) };
   await db.vibes.put(hosted);
   return hosted;
 }

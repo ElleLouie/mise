@@ -82,7 +82,7 @@ function Recipe() {
         </div>
         {added && (
           <p className="small" role="status">
-            On the menu for {added.name || 'your party'} · <Link to={`/party/${added.id}`} className="link">View party</Link>
+            On the menu for {added.name || 'your party'} · <Link to={`/vibe/${added.id}/plan`} className="link">View plan</Link>
           </p>
         )}
       </header>

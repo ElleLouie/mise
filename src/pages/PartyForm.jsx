@@ -19,12 +19,12 @@ function Form({ party, isNew, idea, titles }) {
     const details = { ...party, ...form, name: form.name.trim(), guests: Math.max(1, Number(form.guests) || 1) };
     if (idea) await partyFromIdea(details, idea, titles);
     else await saveParty(details);
-    navigate(`/party/${party.id}${idea ? '?tab=menu' : ''}`, { replace: true });
+    navigate(`/vibe/${party.id}/plan`, { replace: true });
   };
 
   return (
     <div className="page">
-      <Link to={isNew ? (idea ? `/ideas/${idea.id}` : '/') : `/party/${party.id}`} className="back_link"><Icon name="back" size={18} />Back</Link>
+      <Link to={isNew ? (idea ? `/ideas/${idea.id}` : '/saved') : `/vibe/${party.id}/plan`} className="back_link"><Icon name="back" size={18} />Back</Link>
       <form className="panel form" onSubmit={onSubmit}>
         <h1 className="page_title">{isNew ? 'New party' : 'Edit party'}</h1>
         {idea && <p className="lede">{idea.name} · {titles.length} dishes</p>}
@@ -55,7 +55,7 @@ function Form({ party, isNew, idea, titles }) {
             onClick={async () => {
               if (window.confirm(`Stop planning "${party.name || 'this dinner'}"? The vibe stays saved.`)) {
                 await stopHosting(party.id);
-                navigate('/', { replace: true });
+                navigate(`/vibe/${party.id}`, { replace: true });
               }
             }}
           >

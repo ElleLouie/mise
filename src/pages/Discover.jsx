@@ -53,7 +53,7 @@ function Discover() {
       return;
     }
     if (saved) {
-      navigate(`/party/${saved.id}`);
+      navigate(`/vibe/${saved.id}/plan`);
       return;
     }
     const vibe = {
@@ -69,7 +69,7 @@ function Discover() {
       ...draft, id: newId(), name: '', savedAt: Date.now(), plan: null,
     };
     const hosted = await hostVibe(vibe);
-    navigate(`/party/${hosted.id}/edit`);
+    navigate(`/vibe/${hosted.id}/plan`);
   };
 
   return (

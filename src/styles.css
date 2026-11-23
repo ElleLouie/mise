@@ -1989,3 +1989,55 @@ input[type='checkbox'] {
     animation: none;
   }
 }
+
+/* saved vibes */
+.vibe_card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.vibe_card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.vibe_swatch {
+  display: flex;
+  align-items: flex-end;
+  height: 72px;
+  padding: 0 20px 12px;
+  border-bottom: 1px solid var(--card-line);
+}
+
+.vibe_swatch .dots {
+  margin: 0;
+}
+
+.vibe_swatch .dots i {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.vibe_text {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 16px 20px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vibe_card {
+    transition: none;
+  }
+
+  .vibe_card:hover {
+    transform: none;
+  }
+}

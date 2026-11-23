@@ -7,7 +7,7 @@ function Soon({ title, text }) {
       <div className="panel soon">
         <h1 className="page_title">{title}</h1>
         <p className="lede">{text}</p>
-        <Link to="/" className="link">&larr; Parties</Link>
+        <Link to="/" className="link">&larr; Discover</Link>
       </div>
     </div>
   );
