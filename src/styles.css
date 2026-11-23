@@ -1564,6 +1564,7 @@ input[type='checkbox'] {
 
 .table_scene canvas {
   display: block;
+  max-width: 100%;
 }
 
 .moods {
@@ -1960,7 +1961,8 @@ input[type='checkbox'] {
 
 @media (max-width: 900px) {
   .board {
-    grid-template-columns: 1fr;
+    /* minmax(0, …): the table's canvas mustn't widen the column on high-density screens */
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .board_table {
