@@ -396,7 +396,7 @@ function Table({ party, removed }) {
     <>
       <div className="table_frame">
         <Suspense fallback={<div className="table_scene" />}>
-          <TableScene mood={mood} guests={Math.min(seats, 14)} names={names} />
+          <TableScene palette={party.palette} guests={Math.min(seats, 14)} names={names} />
         </Suspense>
       </div>
       <p className="small">Drag to look around. The table&apos;s flowers, candles and linens are on the shopping list.</p>
