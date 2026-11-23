@@ -12,6 +12,7 @@ import { findTimers, formatClock } from '../lib/timers';
 import { useTimers, useWakeLock } from '../lib/kitchen';
 import { aisleOrder } from '../lib/aisles';
 import { moods, moodFor } from '../lib/moods';
+import { planView } from '../lib/vibes';
 import { formatTime } from '../lib/format';
 import { RecipeImage } from '../components/RecipeCard';
 import Icon from '../components/Icon';
@@ -447,12 +448,14 @@ function Table({ party, removed }) {
 function Party() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
-  const party = useLiveQuery(() => db.parties.get(id), [id], 'loading');
+  const vibe = useLiveQuery(() => db.vibes.get(id), [id], 'loading');
   const undo = useUndo();
   const recipes = useLiveQuery(() => db.recipes.orderBy('title').toArray(), []);
 
-  if (party === 'loading' || !recipes) return null;
-  if (!party) return <Soon title="Not found" text="This party was deleted." />;
+  if (vibe === 'loading' || !recipes) return null;
+  if (!vibe?.plan) return <Soon title="Not found" text="This dinner isn't planned." />;
+  // the planning tabs work on the vibe's plan in the shape of a party
+  const party = planView(vibe);
 
   const tab = TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'menu';
   const dishes = menuDishes(party, recipes);

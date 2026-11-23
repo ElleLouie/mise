@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, blankParty, saveParty, deleteParty, partyFromIdea } from '../lib/db';
+import {
+  db, blankParty, saveParty, stopHosting, partyFromIdea,
+} from '../lib/db';
+import { planView } from '../lib/vibes';
 import { ideaFor } from '../lib/ideas';
 import Icon from '../components/Icon';
 
@@ -50,13 +53,13 @@ function Form({ party, isNew, idea, titles }) {
             type="button"
             className="link link-danger"
             onClick={async () => {
-              if (window.confirm(`Delete "${party.name || 'this party'}"?`)) {
-                await deleteParty(party.id);
+              if (window.confirm(`Stop planning "${party.name || 'this dinner'}"? The vibe stays saved.`)) {
+                await stopHosting(party.id);
                 navigate('/', { replace: true });
               }
             }}
           >
-            Delete party
+            Stop planning
           </button>
         )}
       </form>
@@ -68,12 +71,12 @@ function PartyForm() {
   const { id } = useParams();
   const { state } = useLocation();
   const idea = state?.idea ? ideaFor(state.idea) : null;
-  const party = useLiveQuery(() => (id ? db.parties.get(id) : null), [id], 'loading');
+  const vibe = useLiveQuery(() => (id ? db.vibes.get(id) : null), [id], 'loading');
   const [fresh] = useState(blankParty);
 
   if (!id) return <Form party={fresh} isNew idea={idea} titles={state?.titles ?? []} />;
-  if (party === 'loading' || !party) return null;
-  return <Form key={party.id} party={party} />;
+  if (vibe === 'loading' || !vibe?.plan) return null;
+  return <Form key={vibe.id} party={planView(vibe)} />;
 }
 
 export default PartyForm;

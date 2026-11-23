@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, saveParty, deleteRecipe } from '../lib/db';
 import { scaleIngredient } from '../lib/ingredients';
 import { courseFor, isUpcoming } from '../lib/party';
+import { planView } from '../lib/vibes';
 import { formatTime } from '../lib/format';
 import Icon from '../components/Icon';
 import Soon from './Soon';
@@ -20,7 +21,8 @@ function Recipe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const recipe = useLiveQuery(() => db.recipes.get(id), [id], 'loading');
-  const parties = useLiveQuery(() => db.parties.orderBy('date').toArray(), []);
+  // hosted vibes, as parties
+  const parties = useLiveQuery(async () => (await db.vibes.toArray()).filter((v) => v.plan).map(planView), []);
   const [servings, setServings] = useState(null);
   const [checked, setChecked] = useState(() => new Set());
   const [added, setAdded] = useState(null);

@@ -23,7 +23,8 @@ export default [
       ...reactHooks.configs.recommended.rules,
       quotes: ['error', 'single'],
       'max-len': ['error', 200],
-      'no-unused-vars': ['error', { vars: 'all', args: 'none' }],
+      // destructuring a field away to keep the rest is fine
+      'no-unused-vars': ['error', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'react/prop-types': 'off',
     },
   },

@@ -43,7 +43,6 @@ export const planView = (vibe) => ({
 // …and their changes go back into the vibe. Picking another table style changes the vibe's palette.
 export function applyPlanView(vibe, view) {
   // the id and palette belong to the vibe, not the plan
-  // eslint-disable-next-line no-unused-vars
   const {
     id, name, mood, palette, ...plan
   } = view;

@@ -6,6 +6,7 @@ import {
   isUpcoming, partyTime, menuDishes, partyShopping, seatsFor, timeline, clockLabel,
 } from '../lib/party';
 import { ideas } from '../lib/ideas';
+import { planView } from '../lib/vibes';
 import Icon from '../components/Icon';
 import { IdeaCard } from './Ideas';
 
@@ -73,7 +74,9 @@ function PartyRow({ party }) {
 }
 
 function Parties() {
-  const parties = useLiveQuery(() => db.parties.orderBy('date').toArray(), []);
+  // hosted vibes, as parties, by date
+  const parties = useLiveQuery(async () => (await db.vibes.toArray()).filter((v) => v.plan).map(planView)
+    .sort((a, b) => a.date.localeCompare(b.date)), []);
   const recipes = useLiveQuery(() => db.recipes.toArray(), []);
   const [now] = useState(() => Date.now());
   if (!parties || !recipes) return null;
